@@ -38,14 +38,57 @@ const STORAGE_KEYS = {
   settings: "lcm_settings",
   seeded: "lcm_seeded_v1",
   auth: "lcm_auth",
+  owner: "lcm_owner",
 };
+
+// --- Owner Account ---
+export interface OwnerAccount {
+  email: string;
+  passwordHash: string;
+  businessName: string;
+  createdAt: string;
+}
+
+function simpleHash(str: string): string {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash;
+  }
+  return hash.toString(36);
+}
 
 // --- Auth ---
 export function useAuth() {
   const [isLoggedIn, setIsLoggedIn] = useLocalStorage<boolean>(STORAGE_KEYS.auth, false);
-  const login = useCallback(() => setIsLoggedIn(true), [setIsLoggedIn]);
-  const logout = useCallback(() => setIsLoggedIn(false), [setIsLoggedIn]);
-  return { isLoggedIn, login, logout };
+  const [owner, setOwner] = useLocalStorage<OwnerAccount | null>(STORAGE_KEYS.owner, null);
+
+  const isSetupComplete = owner !== null;
+
+  const signup = useCallback((email: string, password: string, businessName: string) => {
+    const account: OwnerAccount = {
+      email,
+      passwordHash: simpleHash(password),
+      businessName,
+      createdAt: new Date().toISOString().split("T")[0],
+    };
+    setOwner(account);
+    setIsLoggedIn(true);
+  }, [setOwner, setIsLoggedIn]);
+
+  const login = useCallback((email: string, password: string): boolean => {
+    if (!owner) return false;
+    if (owner.email !== email || owner.passwordHash !== simpleHash(password)) return false;
+    setIsLoggedIn(true);
+    return true;
+  }, [owner, setIsLoggedIn]);
+
+  const logout = useCallback(() => {
+    setIsLoggedIn(false);
+  }, [setIsLoggedIn]);
+
+  return { isLoggedIn, isSetupComplete, owner, signup, login, logout };
 }
 
 // --- Seed Data ---

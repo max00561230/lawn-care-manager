@@ -6,20 +6,34 @@ import { useAuth } from "@/lib/storage";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login } = useAuth();
+  const { login, owner, isSetupComplete } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
+  // If no account set up yet, redirect to setup
+  if (!isSetupComplete) {
+    if (typeof window !== "undefined") {
+      router.replace("/setup/");
+    }
+    return null;
+  }
+
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    // Simple local auth — accept any email/password for demo
+    setError("");
+
     if (!email || !password) {
       setError("Please enter email and password");
       return;
     }
-    login();
-    router.push("/dashboard/");
+
+    const success = login(email, password);
+    if (success) {
+      router.push("/dashboard/");
+    } else {
+      setError("Invalid email or password");
+    }
   };
 
   return (
@@ -39,15 +53,19 @@ export default function LoginPage() {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
             <input
-              type="email" value={email} onChange={(e) => setEmail(e.target.value)}
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:border-green-500 focus:ring-1 focus:ring-green-500"
-              placeholder="owner@jrtlawn.com"
+              placeholder={owner?.email || "your@email.com"}
             />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
             <input
-              type="password" value={password} onChange={(e) => setPassword(e.target.value)}
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:border-green-500 focus:ring-1 focus:ring-green-500"
               placeholder="••••••••"
             />
@@ -59,12 +77,6 @@ export default function LoginPage() {
             Sign In
           </button>
         </form>
-
-        <div className="mt-4 text-center">
-          <button className="text-sm text-green-600 hover:text-green-800">
-            Forgot password?
-          </button>
-        </div>
 
         <div className="mt-8 pt-6 border-t border-gray-100 text-center">
           <p className="text-xs text-gray-400">Are you a customer?</p>

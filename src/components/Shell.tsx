@@ -17,7 +17,10 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
 
 export default function Shell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const { logout } = useAuth();
+  const { logout, owner } = useAuth();
+
+  const displayName = owner?.businessName || "Business Owner";
+  const displayEmail = owner?.email || "";
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -28,7 +31,7 @@ export default function Shell({ children }: { children: ReactNode }) {
           <img src="/jrt-logo.png" alt="JRT" className="w-10 h-10 rounded" />
           <div>
             <h1 className="text-lg font-bold text-yellow-400">{APP_NAME}</h1>
-            <p className="text-xs text-green-300">Business Dashboard</p>
+            <p className="text-xs text-green-300">{displayName}</p>
           </div>
         </div>
 
@@ -61,8 +64,8 @@ export default function Shell({ children }: { children: ReactNode }) {
               <User className="w-5 h-5 text-green-200" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-white truncate">Business Owner</p>
-              <p className="text-xs text-green-300 truncate">owner@jrtlawn.com</p>
+              <p className="text-sm font-medium text-white truncate">{displayName}</p>
+              <p className="text-xs text-green-300 truncate">{displayEmail}</p>
             </div>
             <button onClick={() => { logout(); window.location.href = "/login/"; }} className="text-green-400 hover:text-white">
               <LogOut className="w-5 h-5" />
@@ -77,6 +80,7 @@ export default function Shell({ children }: { children: ReactNode }) {
           <img src="/jrt-logo.png" alt="JRT" className="w-8 h-8 rounded" />
           <h1 className="text-base font-bold text-yellow-400">{APP_NAME}</h1>
           <div className="ml-auto flex items-center gap-2">
+            <span className="text-xs text-green-300 hidden sm:inline">{displayName}</span>
             <button
               onClick={() => { logout(); window.location.href = "/login/"; }}
               className="text-green-300 hover:text-white p-1"

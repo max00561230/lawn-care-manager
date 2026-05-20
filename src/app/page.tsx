@@ -6,16 +6,18 @@ import { useAuth, ensureSeeded } from "@/lib/storage";
 
 export default function Home() {
   const router = useRouter();
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, isSetupComplete } = useAuth();
 
   useEffect(() => {
     ensureSeeded();
     if (isLoggedIn) {
       router.replace("/dashboard/");
+    } else if (!isSetupComplete) {
+      router.replace("/setup/");
     } else {
       router.replace("/login/");
     }
-  }, [isLoggedIn, router]);
+  }, [isLoggedIn, isSetupComplete, router]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
