@@ -1,0 +1,210 @@
+"use client";
+
+import { useState } from "react";
+import { usePayments, useCustomers } from "@/lib/storage";
+import { PaymentStatus, PaymentType } from "@/types";
+import { Plus, X } from "lucide-react";
+
+const STATUS_TABS = [
+  { value: "all", label: "All" },
+  { value: "paid", label: "Paid" },
+  { value: "unpaid", label: "Unpaid" },
+  { value: "past_due", label: "Past Due" },
+  { value: "refunded", label: "Refunded" },
+];
+
+const STATUS_COLORS: Record<string, string> = {
+  paid: "bg-green-100 text-green-700",
+  unpaid: "bg-yellow-100 text-yellow-700",
+  past_due: "bg-red-100 text-red-700",
+  refunded: "bg-gray-100 text-gray-600",
+};
+
+export default function PaymentsPage() {
+  const { payments, addPayment, updatePayment, deletePayment } = usePayments();
+  const { customers } = useCustomers();
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [formData, setFormData] = useState({
+    customer_id: "", amount: 0, payment_type: "full" as PaymentType, status: "unpaid" as PaymentStatus, description: "", paid_at: "",
+  });
+
+  const filtered = payments.filter((p) => {
+    if (statusFilter !== "all" && p.status !== statusFilter) return false;
+    if (dateFrom && (p.paid_at || p.created_at) < dateFrom) return false;
+    if (dateTo && (p.paid_at || p.created_at) > dateTo) return false;
+    return true;
+  }).sort((a, b) => (b.paid_at || b.created_at).localeCompare(a.paid_at || a.created_at));
+
+  const totalPaid = payments.filter((p) => p.status === "paid").reduce((s, p) => s + p.amount, 0);
+  const totalUnpaid = payments.filter((p) => p.status === "unpaid").reduce((s, p) => s + p.amount, 0);
+  const totalPastDue = payments.filter((p) => p.status === "past_due").reduce((s, p) => s + p.amount, 0);
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-green-900">Payments</h1>
+        <button onClick={() => setShowModal(true)} className="flex items-center gap-2 bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800 transition-colors text-sm font-medium">
+          <Plus className="w-4 h-4" /> Add Payment
+        </button>
+      </div>
+
+      {/* Revenue summary */}
+      <div className="grid grid-cols-3 gap-4">
+        <div className="bg-white rounded-lg shadow p-4">
+          <p className="text-xs text-gray-500">Total Paid</p>
+          <p className="text-xl font-bold text-green-700">${totalPaid.toLocaleString()}</p>
+        </div>
+        <div className="bg-white rounded-lg shadow p-4">
+          <p className="text-xs text-gray-500">Unpaid</p>
+          <p className="text-xl font-bold text-yellow-600">${totalUnpaid.toLocaleString()}</p>
+        </div>
+        <div className="bg-white rounded-lg shadow p-4">
+          <p className="text-xs text-gray-500">Past Due</p>
+          <p className="text-xl font-bold text-red-600">${totalPastDue.toLocaleString()}</p>
+        </div>
+      </div>
+
+      {/* Status filter + date range */}
+      <div className="flex flex-col sm:flex-row gap-3">
+        <div className="flex overflow-x-auto gap-1 bg-white rounded-lg shadow p-1 scrollbar-hide">
+          {STATUS_TABS.map((tab) => (
+            <button key={tab.value} onClick={() => setStatusFilter(tab.value)} className={`px-3 py-1.5 rounded text-sm font-medium whitespace-nowrap transition-colors ${
+              statusFilter === tab.value ? "bg-green-700 text-white" : "text-gray-600 hover:bg-gray-100"
+            }`}>
+              {tab.label}
+            </button>
+          ))}
+        </div>
+        <div className="flex gap-2 items-center">
+          <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm" placeholder="From" />
+          <span className="text-gray-400">—</span>
+          <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm" placeholder="To" />
+        </div>
+      </div>
+
+      {/* Payments list */}
+      <div className="bg-white rounded-lg shadow overflow-hidden">
+        {filtered.length === 0 ? (
+          <p className="text-gray-400 text-center py-8">No payments found</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-4 py-3 text-left font-medium text-gray-500">Date</th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-500">Customer</th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-500">Description</th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-500">Type</th>
+                  <th className="px-4 py-3 text-right font-medium text-gray-500">Amount</th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-500">Status</th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-500">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {filtered.map((p) => (
+                  <tr key={p.id} className="hover:bg-green-50/50">
+                    <td className="px-4 py-3 text-gray-700">{p.paid_at || p.created_at}</td>
+                    <td className="px-4 py-3 text-gray-700">{p.customer?.name || "—"}</td>
+                    <td className="px-4 py-3 text-gray-700">{p.description || "—"}</td>
+                    <td className="px-4 py-3 text-gray-500 capitalize">{p.payment_type?.replace("_", " ")}</td>
+                    <td className="px-4 py-3 text-right font-bold text-gray-900">${p.amount.toLocaleString()}</td>
+                    <td className="px-4 py-3">
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_COLORS[p.status] || "bg-gray-100 text-gray-600"}`}>
+                        {p.status?.replace("_", " ")}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-1">
+                        {p.status === "unpaid" && (
+                          <button onClick={() => updatePayment(p.id, { status: "paid" as PaymentStatus, paid_at: new Date().toISOString().split("T")[0] })} className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded hover:bg-green-200">
+                            Mark Paid
+                          </button>
+                        )}
+                        {p.status === "past_due" && (
+                          <button onClick={() => updatePayment(p.id, { status: "paid" as PaymentStatus, paid_at: new Date().toISOString().split("T")[0] })} className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded hover:bg-green-200">
+                            Mark Paid
+                          </button>
+                        )}
+                        <button onClick={() => { if (confirm("Delete this payment?")) deletePayment(p.id); }} className="p-1 text-gray-400 hover:text-red-600"><X className="w-4 h-4" /></button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {/* Add Payment Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setShowModal(false)}>
+          <div className="bg-white rounded-xl max-w-md w-full p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-green-900">Add Payment</h3>
+              <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-gray-600"><X className="w-5 h-5" /></button>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Customer</label>
+                <select value={formData.customer_id} onChange={(e) => setFormData({ ...formData, customer_id: e.target.value })} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                  <option value="">Select customer</option>
+                  {customers.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                </select>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Amount ($)</label>
+                  <input type="number" value={formData.amount} onChange={(e) => setFormData({ ...formData, amount: parseFloat(e.target.value) || 0 })} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" min="0" step="0.01" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                  <select value={formData.payment_type} onChange={(e) => setFormData({ ...formData, payment_type: e.target.value as PaymentType })} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                    <option value="full">Full</option>
+                    <option value="deposit">Deposit</option>
+                    <option value="recurring">Recurring</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                <select value={formData.status} onChange={(e) => setFormData({ ...formData, status: e.target.value as PaymentStatus })} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                  <option value="paid">Paid</option>
+                  <option value="unpaid">Unpaid</option>
+                  <option value="past_due">Past Due</option>
+                  <option value="refunded">Refunded</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <input type="text" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+              </div>
+              {formData.status === "paid" && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Paid Date</label>
+                  <input type="date" value={formData.paid_at} onChange={(e) => setFormData({ ...formData, paid_at: e.target.value })} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+                </div>
+              )}
+            </div>
+            <div className="flex justify-end gap-3 mt-6">
+              <button onClick={() => setShowModal(false)} className="px-4 py-2 text-sm text-gray-600">Cancel</button>
+              <button
+                onClick={() => {
+                  addPayment({ customer_id: formData.customer_id || undefined, amount: formData.amount, payment_type: formData.payment_type, status: formData.status, description: formData.description || undefined, paid_at: formData.status === "paid" ? formData.paid_at : undefined });
+                  setShowModal(false);
+                  setFormData({ customer_id: "", amount: 0, payment_type: "full", status: "unpaid", description: "", paid_at: "" });
+                }}
+                className="px-4 py-2 bg-green-700 text-white rounded-lg text-sm font-medium hover:bg-green-800"
+              >
+                Add Payment
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
