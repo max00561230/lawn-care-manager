@@ -4,8 +4,8 @@ import { useCustomers, useAppointments, usePayments, useTasks, useReminders, ens
 import { APPOINTMENT_STATUSES } from "@/lib/constants";
 import Link from "next/link";
 import {
-  Users, Briefcase, DollarSign, AlertCircle, Clock, CheckSquare, Bell,
-  ArrowRight, TrendingUp, Calendar,
+  Users, Briefcase, DollarSign, AlertCircle,
+  ArrowRight, TrendingUp,
 } from "lucide-react";
 import { useEffect } from "react";
 
@@ -45,19 +45,22 @@ export default function DashboardPage() {
     return found || { label: status, color: "#94a3b8" };
   };
 
+  /* Vibrant gradient stat cards — matching FV's lively visual punch */
   const stats = [
-    { label: "Total Customers", value: customers.length, icon: Users, color: "bg-green-100 text-green-700", accent: "border-l-4 border-green-500" },
-    { label: "Active Jobs", value: activeJobs, icon: Briefcase, color: "bg-blue-100 text-blue-700", accent: "border-l-4 border-blue-500" },
-    { label: "Revenue This Month", value: `$${revenueThisMonth.toLocaleString()}`, icon: DollarSign, color: "bg-orange-100 text-orange-700", accent: "border-l-4 border-orange-500" },
-    { label: "Unpaid Invoices", value: `$${unpaidInvoices.toLocaleString()}`, icon: AlertCircle, color: "bg-red-100 text-red-700", accent: "border-l-4 border-red-500" },
+    { label: "Total Customers", value: customers.length, icon: Users, emoji: "👥", gradient: "from-green-500 to-emerald-600", bgLight: "bg-green-50", borderAccent: "border-green-500" },
+    { label: "Active Jobs", value: activeJobs, icon: Briefcase, emoji: "🔧", gradient: "from-blue-500 to-indigo-600", bgLight: "bg-blue-50", borderAccent: "border-blue-500" },
+    { label: "Revenue This Month", value: `$${revenueThisMonth.toLocaleString()}`, icon: DollarSign, emoji: "💰", gradient: "from-orange-500 to-amber-500", bgLight: "bg-orange-50", borderAccent: "border-orange-500" },
+    { label: "Unpaid Invoices", value: `$${unpaidInvoices.toLocaleString()}`, icon: AlertCircle, emoji: "⚠️", gradient: "from-red-500 to-rose-600", bgLight: "bg-red-50", borderAccent: "border-red-500" },
   ];
 
   return (
     <div className="space-y-6">
-      {/* Header with sticky backdrop */}
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
+          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+            📊 Dashboard
+          </h1>
           <p className="text-sm text-gray-500 mt-0.5">
             {new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" })}
           </p>
@@ -68,17 +71,17 @@ export default function DashboardPage() {
         </Link>
       </div>
 
-      {/* Stats cards — upgraded with accent borders and rounded-2xl */}
+      {/* Stats cards — vibrant gradient backgrounds */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat) => (
-          <div key={stat.label} className={`bg-white rounded-2xl shadow-sm p-5 card-hover ${stat.accent}`}>
-            <div className="flex items-center gap-3">
-              <div className={`p-2.5 rounded-xl ${stat.color}`}>
-                <stat.icon className="w-5 h-5" />
+          <div key={stat.label} className={`bg-white rounded-2xl shadow hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5 border-l-4 ${stat.borderAccent}`}>
+            <div className="p-5 flex items-center gap-3">
+              <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.gradient} flex items-center justify-center text-xl shadow-md`}>
+                {stat.emoji}
               </div>
               <div>
-                <p className="text-xs text-gray-500 font-medium">{stat.label}</p>
-                <p className="text-xl font-bold text-gray-900">{stat.value}</p>
+                <p className="text-xs text-gray-500 font-semibold uppercase tracking-wide">{stat.label}</p>
+                <p className="text-2xl font-extrabold text-gray-900">{stat.value}</p>
               </div>
             </div>
           </div>
@@ -87,12 +90,12 @@ export default function DashboardPage() {
 
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Today's Schedule */}
-        <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm">
+        <div className="lg:col-span-2 bg-white rounded-2xl shadow hover:shadow-lg transition-shadow duration-200">
           <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-            <h2 className="font-semibold text-gray-900 flex items-center gap-2">
-              <Clock className="w-5 h-5 text-orange-500" /> Today&apos;s Schedule
+            <h2 className="font-bold text-gray-900 flex items-center gap-2">
+              🕐 Today&apos;s Schedule
             </h2>
-            <Link href="/appointments/" className="text-sm text-orange-600 hover:text-orange-700 font-medium flex items-center gap-1">
+            <Link href="/appointments/" className="text-sm text-orange-600 hover:text-orange-700 font-semibold flex items-center gap-1">
               View All <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
@@ -106,7 +109,7 @@ export default function DashboardPage() {
                   <div key={apt.id} className="px-6 py-3.5 flex items-center gap-4 hover:bg-green-50/50 transition-colors">
                     <div className="text-sm font-mono text-gray-400 w-16">{apt.start_time || "—"}</div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-gray-900 truncate">{apt.title}</p>
+                      <p className="font-semibold text-gray-900 truncate">{apt.title}</p>
                       <p className="text-xs text-gray-500">{apt.customer?.name || "No customer"}</p>
                     </div>
                     <span className="status-badge" style={{ backgroundColor: st.color + "22", color: st.color }}>
@@ -122,12 +125,12 @@ export default function DashboardPage() {
         {/* Quick links sidebar */}
         <div className="space-y-4">
           {/* Pending tasks */}
-          <div className="bg-white rounded-2xl shadow-sm">
+          <div className="bg-white rounded-2xl shadow hover:shadow-lg transition-shadow duration-200">
             <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100">
-              <h3 className="font-semibold text-gray-900 flex items-center gap-2 text-sm">
-                <CheckSquare className="w-4 h-4 text-orange-500" /> Pending Tasks
+              <h3 className="font-bold text-gray-900 flex items-center gap-2 text-sm">
+                ✅ Pending Tasks
               </h3>
-              <Link href="/tasks/" className="text-xs text-orange-600 hover:text-orange-700 font-medium">View all</Link>
+              <Link href="/tasks/" className="text-xs text-orange-600 hover:text-orange-700 font-semibold">View all</Link>
             </div>
             <div className="divide-y divide-gray-50">
               {pendingTasks.length === 0 ? (
@@ -147,12 +150,12 @@ export default function DashboardPage() {
           </div>
 
           {/* Reminders */}
-          <div className="bg-white rounded-2xl shadow-sm">
+          <div className="bg-white rounded-2xl shadow hover:shadow-lg transition-shadow duration-200">
             <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100">
-              <h3 className="font-semibold text-gray-900 flex items-center gap-2 text-sm">
-                <Bell className="w-4 h-4 text-orange-500" /> Reminders
+              <h3 className="font-bold text-gray-900 flex items-center gap-2 text-sm">
+                🔔 Reminders
               </h3>
-              <Link href="/reminders/" className="text-xs text-orange-600 hover:text-orange-700 font-medium">View all</Link>
+              <Link href="/reminders/" className="text-xs text-orange-600 hover:text-orange-700 font-semibold">View all</Link>
             </div>
             <div className="divide-y divide-gray-50">
               {unreadReminders.length === 0 ? (
@@ -173,22 +176,21 @@ export default function DashboardPage() {
 
       {/* Upcoming 7 days */}
       {next7.length > 0 && (
-        <div className="bg-white rounded-2xl shadow-sm">
+        <div className="bg-white rounded-2xl shadow hover:shadow-lg transition-shadow duration-200">
           <div className="px-6 py-4 border-b border-gray-100">
-            <h2 className="font-semibold text-gray-900 flex items-center gap-2">
-              <Calendar className="w-5 h-5 text-orange-500" />
-              Upcoming Appointments (Next 7 Days)
+            <h2 className="font-bold text-gray-900 flex items-center gap-2">
+              📅 Upcoming Appointments (Next 7 Days)
             </h2>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="bg-gray-50/80">
-                  <th className="px-5 py-3 text-left font-medium text-gray-500">Date</th>
-                  <th className="px-5 py-3 text-left font-medium text-gray-500">Time</th>
-                  <th className="px-5 py-3 text-left font-medium text-gray-500">Customer</th>
-                  <th className="px-5 py-3 text-left font-medium text-gray-500">Service</th>
-                  <th className="px-5 py-3 text-left font-medium text-gray-500">Status</th>
+                  <th className="px-5 py-3 text-left font-semibold text-gray-500">Date</th>
+                  <th className="px-5 py-3 text-left font-semibold text-gray-500">Time</th>
+                  <th className="px-5 py-3 text-left font-semibold text-gray-500">Customer</th>
+                  <th className="px-5 py-3 text-left font-semibold text-gray-500">Service</th>
+                  <th className="px-5 py-3 text-left font-semibold text-gray-500">Status</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">

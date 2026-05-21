@@ -37,7 +37,8 @@
 
 body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  background: linear-gradient(180deg, #f0fdf4 0%, #f8fafc 38%, #eff6ff 100%);
+  /* Warm vibrant gradient — matches FV's lively background feel */
+  background: linear-gradient(180deg, #f0fdf4 0%, #f8fafc 30%, #fff7ed 70%, #eff6ff 100%);
   color: var(--text);
 }
 
@@ -50,39 +51,40 @@ body {
 /* Sidebar */
 .sidebar { transition: transform 0.2s ease; }
 
-/* Status badges */
+/* Status badges — punchier */
 .status-badge {
-  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold;
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold tracking-wide;
 }
 
-/* Calendar */
+/* Calendar — more vibrant */
 .calendar-day {
-  @apply min-h-[100px] p-2 border border-gray-200 cursor-pointer hover:bg-green-50 transition-colors rounded-lg;
+  @apply min-h-[100px] p-2 border border-gray-200 cursor-pointer hover:bg-green-50 transition-all duration-200 rounded-lg;
 }
 
 .calendar-day.today {
-  @apply bg-green-50 border-green-300;
+  @apply bg-green-50 border-green-400 shadow-sm;
 }
 
 .calendar-day.selected {
   @apply bg-green-100 border-green-500 ring-2 ring-green-500/30 rounded-lg;
 }
 
-/* Card hover effects */
+/* Card hover — more dramatic shadow lift */
 .card-hover {
-  @apply transition-all duration-200 hover:shadow-md;
+  @apply transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5;
 }
 
-/* Accent button base */
+/* Accent button — vibrant gradient */
 .btn-accent {
-  @apply bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-xl px-4 py-2.5 transition-all duration-200 active:scale-[0.98];
+  @apply bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold rounded-xl px-4 py-2.5 transition-all duration-200 active:scale-[0.98] shadow-md shadow-orange-500/20;
 }
 
+/* Primary button — green gradient */
 .btn-primary {
-  @apply bg-green-700 hover:bg-green-800 text-white font-medium rounded-xl px-4 py-2.5 transition-all duration-200 active:scale-[0.98];
+  @apply bg-gradient-to-r from-green-700 to-emerald-600 hover:from-green-800 hover:to-emerald-700 text-white font-semibold rounded-xl px-4 py-2.5 transition-all duration-200 active:scale-[0.98] shadow-md shadow-green-500/20;
 }
 
-/* Form inputs */
+/* Form inputs — warm focus ring */
 .input-field {
   @apply w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm bg-white
     focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 focus:outline-none

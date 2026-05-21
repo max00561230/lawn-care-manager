@@ -62,17 +62,17 @@ export const DAYS_OF_WEEK = [
 ] as const;
 
 export const NAV_ITEMS = [
-  { href: '/dashboard', label: 'Dashboard', icon: 'LayoutDashboard' },
-  { href: '/calendar', label: 'Calendar', icon: 'Calendar' },
-  { href: '/customers', label: 'Customers', icon: 'Users' },
-  { href: '/appointments', label: 'Appointments', icon: 'Clock' },
-  { href: '/services', label: 'Services', icon: 'Scissors' },
-  { href: '/estimates', label: 'Estimates', icon: 'FileText' },
-  { href: '/tasks', label: 'Tasks', icon: 'CheckSquare' },
-  { href: '/reminders', label: 'Reminders', icon: 'Bell' },
-  { href: '/payments', label: 'Payments', icon: 'CreditCard' },
-  { href: '/reports', label: 'Reports', icon: 'BarChart3' },
-  { href: '/settings', label: 'Settings', icon: 'Settings' },
+  { href: '/dashboard', label: 'Dashboard', icon: '📊' },
+  { href: '/calendar', label: 'Calendar', icon: '📅' },
+  { href: '/customers', label: 'Customers', icon: '👥' },
+  { href: '/appointments', label: 'Appointments', icon: '🕐' },
+  { href: '/services', label: 'Services', icon: '✂️' },
+  { href: '/estimates', label: 'Estimates', icon: '📝' },
+  { href: '/tasks', label: 'Tasks', icon: '✅' },
+  { href: '/reminders', label: 'Reminders', icon: '🔔' },
+  { href: '/payments', label: 'Payments', icon: '💳' },
+  { href: '/reports', label: 'Reports', icon: '📈' },
+  { href: '/settings', label: 'Settings', icon: '⚙️' },
 ] as const;
 
 export const CUSTOMER_NAV_ITEMS = [
