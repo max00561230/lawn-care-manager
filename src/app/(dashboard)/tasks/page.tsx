@@ -57,16 +57,16 @@ export default function TasksPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-green-900">Tasks</h1>
-        <button onClick={openAdd} className="flex items-center gap-2 bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800 transition-colors text-sm font-medium">
+        <h1 className="text-2xl font-bold text-gray-900">Tasks</h1>
+        <button onClick={openAdd} className="flex items-center gap-2 btn-accent text-sm">
           <Plus className="w-4 h-4" /> Add Task
         </button>
       </div>
 
       {/* Status filter */}
-      <div className="flex overflow-x-auto gap-1 bg-white rounded-lg shadow p-1 scrollbar-hide">
+      <div className="flex overflow-x-auto gap-1 bg-white rounded-2xl shadow-sm border border-gray-100 p-1 scrollbar-hide">
         {["all", "not_started", "in_progress", "complete"].map((s) => (
-          <button key={s} onClick={() => setStatusFilter(s)} className={`px-3 py-1.5 rounded text-sm font-medium whitespace-nowrap transition-colors ${
+          <button key={s} onClick={() => setStatusFilter(s)} className={`px-3 py-1.5 rounded-xl text-sm font-medium whitespace-nowrap transition-colors ${
             statusFilter === s ? "bg-green-700 text-white" : "text-gray-600 hover:bg-gray-100"
           }`}>
             {s === "all" ? "All" : s === "not_started" ? "Not Started" : s === "in_progress" ? "In Progress" : "Complete"}
@@ -79,7 +79,7 @@ export default function TasksPage() {
         const items = grouped[priority];
         if (items.length === 0) return null;
         return (
-          <div key={priority} className="bg-white rounded-lg shadow">
+          <div key={priority} className="bg-white rounded-2xl shadow-sm border border-gray-100">
             <div className="px-5 py-3 border-b border-gray-100 flex items-center gap-2">
               <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${priorityColors[priority]}`}>
                 {priority.charAt(0).toUpperCase() + priority.slice(1)} Priority
@@ -92,7 +92,7 @@ export default function TasksPage() {
                   <button
                     onClick={() => toggleComplete(task.id, task.status)}
                     className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 ${
-                      task.status === "complete" ? "bg-green-600 border-green-600 text-white" : "border-gray-300 hover:border-green-500"
+                      task.status === "complete" ? "bg-green-600 border-green-600 text-white" : "border-gray-300 hover:border-orange-500"
                     }`}
                   >
                     {task.status === "complete" && <Check className="w-3 h-3" />}
@@ -106,7 +106,7 @@ export default function TasksPage() {
                     </div>
                   </div>
                   <div className="flex items-center gap-1">
-                    <button onClick={() => openEdit(task.id)} className="p-1 text-gray-400 hover:text-green-700"><Edit className="w-4 h-4" /></button>
+                    <button onClick={() => openEdit(task.id)} className="p-1 text-gray-400 hover:text-orange-600"><Edit className="w-4 h-4" /></button>
                     <button onClick={() => { if (confirm("Delete this task?")) deleteTask(task.id); }} className="p-1 text-gray-400 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
                   </div>
                 </div>
@@ -121,24 +121,24 @@ export default function TasksPage() {
       {/* Add/Edit Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setShowModal(false)}>
-          <div className="bg-white rounded-xl max-w-md w-full p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-green-900">{editId ? "Edit Task" : "Add Task"}</h3>
+              <h3 className="text-lg font-bold text-gray-900">{editId ? "Edit Task" : "Add Task"}</h3>
               <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-gray-600"><X className="w-5 h-5" /></button>
             </div>
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Title *</label>
-                <input type="text" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" placeholder="Task title" />
+                <input type="text" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} className="input-field" placeholder="Task title" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
-                  <input type="date" value={formData.due_date} onChange={(e) => setFormData({ ...formData, due_date: e.target.value })} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+                  <input type="date" value={formData.due_date} onChange={(e) => setFormData({ ...formData, due_date: e.target.value })} className="input-field" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Priority</label>
-                  <select value={formData.priority} onChange={(e) => setFormData({ ...formData, priority: e.target.value as TaskPriority })} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                  <select value={formData.priority} onChange={(e) => setFormData({ ...formData, priority: e.target.value as TaskPriority })} className="input-field">
                     <option value="high">High</option>
                     <option value="medium">Medium</option>
                     <option value="low">Low</option>
@@ -147,7 +147,7 @@ export default function TasksPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Linked Customer</label>
-                <select value={formData.customer_id} onChange={(e) => setFormData({ ...formData, customer_id: e.target.value })} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                <select value={formData.customer_id} onChange={(e) => setFormData({ ...formData, customer_id: e.target.value })} className="input-field">
                   <option value="">None</option>
                   {customers.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                 </select>
@@ -155,7 +155,7 @@ export default function TasksPage() {
             </div>
             <div className="flex justify-end gap-3 mt-6">
               <button onClick={() => setShowModal(false)} className="px-4 py-2 text-sm text-gray-600">Cancel</button>
-              <button onClick={handleSave} className="px-4 py-2 bg-green-700 text-white rounded-lg text-sm font-medium hover:bg-green-800">
+              <button onClick={handleSave} className="btn-primary text-sm">
                 {editId ? "Update" : "Add"} Task
               </button>
             </div>

@@ -45,23 +45,23 @@ export default function PaymentsPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-green-900">Payments</h1>
-        <button onClick={() => setShowModal(true)} className="flex items-center gap-2 bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800 transition-colors text-sm font-medium">
+        <h1 className="text-2xl font-bold text-gray-900">Payments</h1>
+        <button onClick={() => setShowModal(true)} className="flex items-center gap-2 btn-accent text-sm">
           <Plus className="w-4 h-4" /> Add Payment
         </button>
       </div>
 
       {/* Revenue summary */}
       <div className="grid grid-cols-3 gap-4">
-        <div className="bg-white rounded-lg shadow p-4">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
           <p className="text-xs text-gray-500">Total Paid</p>
           <p className="text-xl font-bold text-green-700">${totalPaid.toLocaleString()}</p>
         </div>
-        <div className="bg-white rounded-lg shadow p-4">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
           <p className="text-xs text-gray-500">Unpaid</p>
           <p className="text-xl font-bold text-yellow-600">${totalUnpaid.toLocaleString()}</p>
         </div>
-        <div className="bg-white rounded-lg shadow p-4">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
           <p className="text-xs text-gray-500">Past Due</p>
           <p className="text-xl font-bold text-red-600">${totalPastDue.toLocaleString()}</p>
         </div>
@@ -69,9 +69,9 @@ export default function PaymentsPage() {
 
       {/* Status filter + date range */}
       <div className="flex flex-col sm:flex-row gap-3">
-        <div className="flex overflow-x-auto gap-1 bg-white rounded-lg shadow p-1 scrollbar-hide">
+        <div className="flex overflow-x-auto gap-1 bg-white rounded-2xl shadow-sm border border-gray-100 p-1 scrollbar-hide">
           {STATUS_TABS.map((tab) => (
-            <button key={tab.value} onClick={() => setStatusFilter(tab.value)} className={`px-3 py-1.5 rounded text-sm font-medium whitespace-nowrap transition-colors ${
+            <button key={tab.value} onClick={() => setStatusFilter(tab.value)} className={`px-3 py-1.5 rounded-xl text-sm font-medium whitespace-nowrap transition-colors ${
               statusFilter === tab.value ? "bg-green-700 text-white" : "text-gray-600 hover:bg-gray-100"
             }`}>
               {tab.label}
@@ -79,20 +79,20 @@ export default function PaymentsPage() {
           ))}
         </div>
         <div className="flex gap-2 items-center">
-          <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm" placeholder="From" />
+          <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} className="border border-gray-300 rounded-xl px-3 py-1.5 text-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20" placeholder="From" />
           <span className="text-gray-400">—</span>
-          <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm" placeholder="To" />
+          <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} className="border border-gray-300 rounded-xl px-3 py-1.5 text-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20" placeholder="To" />
         </div>
       </div>
 
       {/* Payments list */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         {filtered.length === 0 ? (
           <p className="text-gray-400 text-center py-8">No payments found</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50">
+              <thead className="bg-gray-50/80">
                 <tr>
                   <th className="px-4 py-3 text-left font-medium text-gray-500">Date</th>
                   <th className="px-4 py-3 text-left font-medium text-gray-500">Customer</th>
@@ -119,12 +119,12 @@ export default function PaymentsPage() {
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-1">
                         {p.status === "unpaid" && (
-                          <button onClick={() => updatePayment(p.id, { status: "paid" as PaymentStatus, paid_at: new Date().toISOString().split("T")[0] })} className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded hover:bg-green-200">
+                          <button onClick={() => updatePayment(p.id, { status: "paid" as PaymentStatus, paid_at: new Date().toISOString().split("T")[0] })} className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-xl hover:bg-green-200">
                             Mark Paid
                           </button>
                         )}
                         {p.status === "past_due" && (
-                          <button onClick={() => updatePayment(p.id, { status: "paid" as PaymentStatus, paid_at: new Date().toISOString().split("T")[0] })} className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded hover:bg-green-200">
+                          <button onClick={() => updatePayment(p.id, { status: "paid" as PaymentStatus, paid_at: new Date().toISOString().split("T")[0] })} className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-xl hover:bg-green-200">
                             Mark Paid
                           </button>
                         )}
@@ -142,15 +142,15 @@ export default function PaymentsPage() {
       {/* Add Payment Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setShowModal(false)}>
-          <div className="bg-white rounded-xl max-w-md w-full p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-green-900">Add Payment</h3>
+              <h3 className="text-lg font-bold text-gray-900">Add Payment</h3>
               <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-gray-600"><X className="w-5 h-5" /></button>
             </div>
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Customer</label>
-                <select value={formData.customer_id} onChange={(e) => setFormData({ ...formData, customer_id: e.target.value })} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                <select value={formData.customer_id} onChange={(e) => setFormData({ ...formData, customer_id: e.target.value })} className="input-field">
                   <option value="">Select customer</option>
                   {customers.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                 </select>
@@ -158,11 +158,11 @@ export default function PaymentsPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Amount ($)</label>
-                  <input type="number" value={formData.amount} onChange={(e) => setFormData({ ...formData, amount: parseFloat(e.target.value) || 0 })} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" min="0" step="0.01" />
+                  <input type="number" value={formData.amount} onChange={(e) => setFormData({ ...formData, amount: parseFloat(e.target.value) || 0 })} className="input-field" min="0" step="0.01" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
-                  <select value={formData.payment_type} onChange={(e) => setFormData({ ...formData, payment_type: e.target.value as PaymentType })} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                  <select value={formData.payment_type} onChange={(e) => setFormData({ ...formData, payment_type: e.target.value as PaymentType })} className="input-field">
                     <option value="full">Full</option>
                     <option value="deposit">Deposit</option>
                     <option value="recurring">Recurring</option>
@@ -171,7 +171,7 @@ export default function PaymentsPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                <select value={formData.status} onChange={(e) => setFormData({ ...formData, status: e.target.value as PaymentStatus })} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                <select value={formData.status} onChange={(e) => setFormData({ ...formData, status: e.target.value as PaymentStatus })} className="input-field">
                   <option value="paid">Paid</option>
                   <option value="unpaid">Unpaid</option>
                   <option value="past_due">Past Due</option>
@@ -180,12 +180,12 @@ export default function PaymentsPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                <input type="text" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+                <input type="text" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} className="input-field" />
               </div>
               {formData.status === "paid" && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Paid Date</label>
-                  <input type="date" value={formData.paid_at} onChange={(e) => setFormData({ ...formData, paid_at: e.target.value })} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+                  <input type="date" value={formData.paid_at} onChange={(e) => setFormData({ ...formData, paid_at: e.target.value })} className="input-field" />
                 </div>
               )}
             </div>
@@ -197,7 +197,7 @@ export default function PaymentsPage() {
                   setShowModal(false);
                   setFormData({ customer_id: "", amount: 0, payment_type: "full", status: "unpaid", description: "", paid_at: "" });
                 }}
-                className="px-4 py-2 bg-green-700 text-white rounded-lg text-sm font-medium hover:bg-green-800"
+                className="btn-primary text-sm"
               >
                 Add Payment
               </button>

@@ -24,7 +24,7 @@ export default function CustomerDetailPage() {
     return (
       <div className="text-center py-12">
         <p className="text-gray-500">Customer not found</p>
-        <Link href="/customers/" className="text-green-700 hover:text-green-900 mt-2 inline-block">Back to Customers</Link>
+        <Link href="/customers/" className="text-orange-600 hover:text-orange-700 mt-2 inline-block">Back to Customers</Link>
       </div>
     );
   }
@@ -42,12 +42,11 @@ export default function CustomerDetailPage() {
 
   return (
     <div className="space-y-6">
-      <button onClick={() => router.back()} className="flex items-center gap-1 text-sm text-green-700 hover:text-green-900">
+      <button onClick={() => router.back()} className="flex items-center gap-1 text-sm text-orange-600 hover:text-orange-700">
         <ArrowLeft className="w-4 h-4" /> Back
       </button>
 
-      {/* Profile header */}
-      <div className="bg-white rounded-lg shadow p-6">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-4">
             <div className="w-14 h-14 rounded-full bg-green-700 text-white flex items-center justify-center text-xl font-bold">
@@ -55,9 +54,9 @@ export default function CustomerDetailPage() {
             </div>
             <div>
               {editMode ? (
-                <input type="text" value={editData.name || ""} onChange={(e) => setEditData({ ...editData, name: e.target.value })} className="text-xl font-bold border border-gray-300 rounded px-2 py-1" />
+                <input type="text" value={editData.name || ""} onChange={(e) => setEditData({ ...editData, name: e.target.value })} className="text-xl font-bold border border-gray-300 rounded-xl px-2 py-1" />
               ) : (
-                <h1 className="text-xl font-bold text-green-900">{customer.name}</h1>
+                <h1 className="text-xl font-bold text-gray-900">{customer.name}</h1>
               )}
               <div className="flex flex-wrap gap-3 mt-1 text-sm text-gray-500">
                 {customer.phone && <span className="flex items-center gap-1"><Phone className="w-3.5 h-3.5" />{customer.phone}</span>}
@@ -71,27 +70,26 @@ export default function CustomerDetailPage() {
               </div>
             </div>
           </div>
-          <button onClick={() => { if (editMode) { setEditData(customer); } setEditMode(!editMode); }} className="flex items-center gap-1 text-sm text-green-700 hover:text-green-900 px-3 py-1.5 border border-green-700 rounded-lg">
+          <button onClick={() => { if (editMode) { setEditData(customer); } setEditMode(!editMode); }} className="flex items-center gap-1 text-sm text-orange-600 hover:text-orange-700 px-3 py-1.5 border border-orange-500 rounded-xl">
             <Edit className="w-4 h-4" /> {editMode ? "Cancel" : "Edit"}
           </button>
         </div>
 
-        {/* Details grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-6 text-sm">
           {editMode ? (
             <>
-              <div><label className="block text-gray-500 mb-1">Address</label><input type="text" value={editData.address || ""} onChange={(e) => setEditData({ ...editData, address: e.target.value })} className="w-full border border-gray-300 rounded px-2 py-1" /></div>
-              <div><label className="block text-gray-500 mb-1">Phone</label><input type="text" value={editData.phone || ""} onChange={(e) => setEditData({ ...editData, phone: e.target.value })} className="w-full border border-gray-300 rounded px-2 py-1" /></div>
-              <div><label className="block text-gray-500 mb-1">Email</label><input type="text" value={editData.email || ""} onChange={(e) => setEditData({ ...editData, email: e.target.value })} className="w-full border border-gray-300 rounded px-2 py-1" /></div>
-              <div><label className="block text-gray-500 mb-1">Service Frequency</label><select value={editData.service_frequency || "weekly"} onChange={(e) => setEditData({ ...editData, service_frequency: e.target.value as ServiceFrequency })} className="w-full border border-gray-300 rounded px-2 py-1">{SERVICE_FREQUENCIES.map((f) => <option key={f.value} value={f.value}>{f.label}</option>)}</select></div>
-              <div><label className="block text-gray-500 mb-1">Property Size</label><input type="text" value={editData.property_size || ""} onChange={(e) => setEditData({ ...editData, property_size: e.target.value })} className="w-full border border-gray-300 rounded px-2 py-1" /></div>
-              <div><label className="block text-gray-500 mb-1">Gate Code</label><input type="text" value={editData.gate_code || ""} onChange={(e) => setEditData({ ...editData, gate_code: e.target.value })} className="w-full border border-gray-300 rounded px-2 py-1" /></div>
-              <div><label className="block text-gray-500 mb-1">Preferred Day</label><select value={editData.preferred_day || ""} onChange={(e) => setEditData({ ...editData, preferred_day: e.target.value })} className="w-full border border-gray-300 rounded px-2 py-1"><option value="">No preference</option>{DAYS_OF_WEEK.map((d) => <option key={d} value={d}>{d}</option>)}</select></div>
-              <div><label className="block text-gray-500 mb-1">Customer Type</label><select value={editData.customer_type || "residential"} onChange={(e) => setEditData({ ...editData, customer_type: e.target.value as CustomerType })} className="w-full border border-gray-300 rounded px-2 py-1"><option value="residential">Residential</option><option value="commercial">Commercial</option></select></div>
-              <div className="sm:col-span-2 lg:col-span-3"><label className="block text-gray-500 mb-1">Notes</label><textarea value={editData.notes || ""} onChange={(e) => setEditData({ ...editData, notes: e.target.value })} rows={3} className="w-full border border-gray-300 rounded px-2 py-1" /></div>
+              <div><label className="block text-gray-500 mb-1">Address</label><input type="text" value={editData.address || ""} onChange={(e) => setEditData({ ...editData, address: e.target.value })} className="input-field" /></div>
+              <div><label className="block text-gray-500 mb-1">Phone</label><input type="text" value={editData.phone || ""} onChange={(e) => setEditData({ ...editData, phone: e.target.value })} className="input-field" /></div>
+              <div><label className="block text-gray-500 mb-1">Email</label><input type="text" value={editData.email || ""} onChange={(e) => setEditData({ ...editData, email: e.target.value })} className="input-field" /></div>
+              <div><label className="block text-gray-500 mb-1">Service Frequency</label><select value={editData.service_frequency || "weekly"} onChange={(e) => setEditData({ ...editData, service_frequency: e.target.value as ServiceFrequency })} className="input-field">{SERVICE_FREQUENCIES.map((f) => <option key={f.value} value={f.value}>{f.label}</option>)}</select></div>
+              <div><label className="block text-gray-500 mb-1">Property Size</label><input type="text" value={editData.property_size || ""} onChange={(e) => setEditData({ ...editData, property_size: e.target.value })} className="input-field" /></div>
+              <div><label className="block text-gray-500 mb-1">Gate Code</label><input type="text" value={editData.gate_code || ""} onChange={(e) => setEditData({ ...editData, gate_code: e.target.value })} className="input-field" /></div>
+              <div><label className="block text-gray-500 mb-1">Preferred Day</label><select value={editData.preferred_day || ""} onChange={(e) => setEditData({ ...editData, preferred_day: e.target.value })} className="input-field"><option value="">No preference</option>{DAYS_OF_WEEK.map((d) => <option key={d} value={d}>{d}</option>)}</select></div>
+              <div><label className="block text-gray-500 mb-1">Customer Type</label><select value={editData.customer_type || "residential"} onChange={(e) => setEditData({ ...editData, customer_type: e.target.value as CustomerType })} className="input-field"><option value="residential">Residential</option><option value="commercial">Commercial</option></select></div>
+              <div className="sm:col-span-2 lg:col-span-3"><label className="block text-gray-500 mb-1">Notes</label><textarea value={editData.notes || ""} onChange={(e) => setEditData({ ...editData, notes: e.target.value })} rows={3} className="input-field" /></div>
               <div className="sm:col-span-2 lg:col-span-3 flex justify-end gap-3">
                 <button onClick={() => { setEditData(customer); setEditMode(false); }} className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800">Cancel</button>
-                <button onClick={handleSave} className="px-4 py-2 bg-green-700 text-white rounded-lg text-sm font-medium hover:bg-green-800">Save Changes</button>
+                <button onClick={handleSave} className="btn-primary text-sm">Save Changes</button>
               </div>
             </>
           ) : (
@@ -117,9 +115,9 @@ export default function CustomerDetailPage() {
       </div>
 
       {/* Service History */}
-      <div className="bg-white rounded-lg shadow">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
         <div className="px-5 py-4 border-b border-gray-100">
-          <h2 className="font-semibold text-green-900">Service History ({custAppts.length})</h2>
+          <h2 className="font-semibold text-gray-900">Service History ({custAppts.length})</h2>
         </div>
         {custAppts.length === 0 ? (
           <p className="px-5 py-8 text-gray-400 text-sm text-center">No service history</p>
@@ -143,9 +141,9 @@ export default function CustomerDetailPage() {
       </div>
 
       {/* Payment History */}
-      <div className="bg-white rounded-lg shadow">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
         <div className="px-5 py-4 border-b border-gray-100">
-          <h2 className="font-semibold text-green-900">Payment History ({custPayments.length})</h2>
+          <h2 className="font-semibold text-gray-900">Payment History ({custPayments.length})</h2>
         </div>
         {custPayments.length === 0 ? (
           <p className="px-5 py-8 text-gray-400 text-sm text-center">No payment history</p>

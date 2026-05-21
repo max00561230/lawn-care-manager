@@ -72,19 +72,19 @@ export default function ReportsPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-green-900">Reports</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Reports</h1>
         <div className="flex gap-2 items-center">
-          <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm" />
+          <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} className="border border-gray-300 rounded-xl px-3 py-1.5 text-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20" />
           <span className="text-gray-400">—</span>
-          <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm" />
+          <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} className="border border-gray-300 rounded-xl px-3 py-1.5 text-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20" />
         </div>
       </div>
 
       {/* Summary cards */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
         {stats.map((stat) => (
-          <div key={stat.label} className="bg-white rounded-lg shadow p-4">
-            <div className={`w-8 h-8 rounded-lg ${stat.color} text-white flex items-center justify-center text-sm font-bold mb-2`}>
+          <div key={stat.label} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+            <div className={`w-8 h-8 rounded-xl ${stat.color} text-white flex items-center justify-center text-sm font-bold mb-2`}>
               {stat.value.charAt(0) === "$" ? "$" : "#"}
             </div>
             <p className="text-xs text-gray-500">{stat.label}</p>
@@ -95,8 +95,8 @@ export default function ReportsPage() {
 
       {/* Weekly Revenue Chart */}
       {sortedWeeks.length > 0 && (
-        <div className="bg-white rounded-lg shadow p-5">
-          <h2 className="font-semibold text-green-900 mb-4">Weekly Revenue</h2>
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+          <h2 className="font-semibold text-gray-900 mb-4">Weekly Revenue</h2>
           <div className="flex items-end gap-2 h-48">
             {sortedWeeks.map(([week, revenue]) => (
               <div key={week} className="flex-1 flex flex-col items-center">
@@ -112,8 +112,8 @@ export default function ReportsPage() {
 
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Most Used Services */}
-        <div className="bg-white rounded-lg shadow p-5">
-          <h2 className="font-semibold text-green-900 mb-4">Most Used Services</h2>
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+          <h2 className="font-semibold text-gray-900 mb-4">Most Used Services</h2>
           {sortedServices.length === 0 ? (
             <p className="text-gray-400 text-center py-4">No data for this period</p>
           ) : (
@@ -134,8 +134,8 @@ export default function ReportsPage() {
         </div>
 
         {/* Revenue by Service */}
-        <div className="bg-white rounded-lg shadow p-5">
-          <h2 className="font-semibold text-green-900 mb-4">Revenue by Service</h2>
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+          <h2 className="font-semibold text-gray-900 mb-4">Revenue by Service</h2>
           {sortedRevenue.length === 0 ? (
             <p className="text-gray-400 text-center py-4">No data for this period</p>
           ) : (

@@ -43,19 +43,19 @@ export default function AppointmentsPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-green-900">Appointments</h1>
-        <button onClick={() => setShowAddModal(true)} className="flex items-center gap-2 bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800 transition-colors text-sm font-medium">
+        <h1 className="text-2xl font-bold text-gray-900">Appointments</h1>
+        <button onClick={() => setShowAddModal(true)} className="flex items-center gap-2 btn-accent text-sm">
           <Plus className="w-4 h-4" /> Add Appointment
         </button>
       </div>
 
       {/* Status filter tabs */}
-      <div className="flex overflow-x-auto gap-1 bg-white rounded-lg shadow p-1 scrollbar-hide">
+      <div className="flex overflow-x-auto gap-1 bg-white rounded-2xl shadow-sm border border-gray-100 p-1 scrollbar-hide">
         {STATUS_TABS.map((tab) => (
           <button
             key={tab.value}
             onClick={() => setStatusFilter(tab.value)}
-            className={`px-3 py-1.5 rounded text-sm font-medium whitespace-nowrap transition-colors ${
+            className={`px-3 py-1.5 rounded-xl text-sm font-medium whitespace-nowrap transition-colors ${
               statusFilter === tab.value ? "bg-green-700 text-white" : "text-gray-600 hover:bg-gray-100"
             }`}
           >
@@ -65,13 +65,13 @@ export default function AppointmentsPage() {
       </div>
 
       {/* Appointments list */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         {filtered.length === 0 ? (
           <p className="text-gray-400 text-center py-8">No appointments found</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50">
+              <thead className="bg-gray-50/80">
                 <tr>
                   <th className="px-4 py-3 text-left font-medium text-gray-500">Date</th>
                   <th className="px-4 py-3 text-left font-medium text-gray-500">Time</th>
@@ -110,7 +110,7 @@ export default function AppointmentsPage() {
                             <select
                               value={apt.status}
                               onChange={(e) => updateAppointment(apt.id, { status: e.target.value as AppointmentStatus })}
-                              className="appearance-none bg-gray-100 rounded px-2 py-1 text-xs font-medium pr-6 cursor-pointer"
+                              className="appearance-none bg-gray-100 rounded-xl px-2 py-1 text-xs font-medium pr-6 cursor-pointer"
                             >
                               {statusOptions.map((s) => <option key={s} value={s}>{getStatusLabel(s)}</option>)}
                             </select>
@@ -133,27 +133,27 @@ export default function AppointmentsPage() {
       {/* Add Appointment Modal */}
       {showAddModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setShowAddModal(false)}>
-          <div className="bg-white rounded-xl max-w-md w-full p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-green-900">Add Appointment</h3>
+              <h3 className="text-lg font-bold text-gray-900">Add Appointment</h3>
               <button onClick={() => setShowAddModal(false)} className="text-gray-400 hover:text-gray-600"><X className="w-5 h-5" /></button>
             </div>
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Title *</label>
-                <input type="text" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-green-500 focus:ring-1 focus:ring-green-500" placeholder="e.g., Lawn Mowing — John Smith" />
+                <input type="text" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} className="input-field" placeholder="e.g., Lawn Mowing — John Smith" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Customer</label>
-                  <select value={formData.customer_id} onChange={(e) => setFormData({ ...formData, customer_id: e.target.value })} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                  <select value={formData.customer_id} onChange={(e) => setFormData({ ...formData, customer_id: e.target.value })} className="input-field">
                     <option value="">Select customer</option>
                     {customers.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                   </select>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Service</label>
-                  <select value={formData.service_id} onChange={(e) => setFormData({ ...formData, service_id: e.target.value })} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                  <select value={formData.service_id} onChange={(e) => setFormData({ ...formData, service_id: e.target.value })} className="input-field">
                     <option value="">Select service</option>
                     {services.filter((s) => s.is_active).map((s) => <option key={s.id} value={s.id}>{s.name} — ${s.base_price}</option>)}
                   </select>
@@ -162,17 +162,17 @@ export default function AppointmentsPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Date *</label>
-                  <input type="date" value={formData.date} onChange={(e) => setFormData({ ...formData, date: e.target.value })} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+                  <input type="date" value={formData.date} onChange={(e) => setFormData({ ...formData, date: e.target.value })} className="input-field" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Start Time</label>
-                  <input type="time" value={formData.start_time} onChange={(e) => setFormData({ ...formData, start_time: e.target.value })} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+                  <input type="time" value={formData.start_time} onChange={(e) => setFormData({ ...formData, start_time: e.target.value })} className="input-field" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">End Time</label>
-                  <input type="time" value={formData.end_time} onChange={(e) => setFormData({ ...formData, end_time: e.target.value })} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+                  <input type="time" value={formData.end_time} onChange={(e) => setFormData({ ...formData, end_time: e.target.value })} className="input-field" />
                 </div>
                 <div className="flex items-end pb-2">
                   <label className="flex items-center gap-2 text-sm">
@@ -183,7 +183,7 @@ export default function AppointmentsPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
-                <textarea value={formData.notes} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} rows={3} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+                <textarea value={formData.notes} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} rows={3} className="input-field" />
               </div>
             </div>
             <div className="flex justify-end gap-3 mt-6">
@@ -195,7 +195,7 @@ export default function AppointmentsPage() {
                   setShowAddModal(false);
                   setFormData({ customer_id: "", service_id: "", title: "", date: "", start_time: "", end_time: "", notes: "", is_recurring: false });
                 }}
-                className="px-4 py-2 bg-green-700 text-white rounded-lg text-sm font-medium hover:bg-green-800"
+                className="btn-primary text-sm"
               >
                 Add Appointment
               </button>

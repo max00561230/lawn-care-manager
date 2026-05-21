@@ -23,7 +23,7 @@ export default function Home() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="text-center">
         <img src="/jrt-logo.png" alt="JRT" className="w-16 h-16 mx-auto mb-4" />
-        <p className="text-green-800 font-medium">Loading...</p>
+        <p className="text-gray-700 font-medium">Loading...</p>
       </div>
     </div>
   );

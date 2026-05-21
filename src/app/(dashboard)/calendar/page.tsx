@@ -85,13 +85,13 @@ export default function CalendarPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-green-900">Calendar</h1>
-        <div className="flex gap-1 bg-white rounded-lg shadow p-1">
+        <h1 className="text-2xl font-bold text-gray-900">Calendar</h1>
+        <div className="flex gap-1 bg-white rounded-2xl shadow-sm border border-gray-100 p-1">
           {(["month", "week", "day"] as ViewMode[]).map((v) => (
             <button
               key={v}
               onClick={() => setView(v)}
-              className={`px-3 py-1.5 rounded text-sm font-medium transition-colors ${
+              className={`px-3 py-1.5 rounded-xl text-sm font-medium transition-colors ${
                 view === v ? "bg-green-700 text-white" : "text-gray-600 hover:bg-gray-100"
               }`}
             >
@@ -102,25 +102,25 @@ export default function CalendarPage() {
       </div>
 
       {/* Navigation */}
-      <div className="flex items-center justify-between bg-white rounded-lg shadow px-4 py-3">
+      <div className="flex items-center justify-between bg-white rounded-2xl shadow-sm border border-gray-100 px-4 py-3">
         <button onClick={() => { if (view === "month") navigateMonth(-1); else if (view === "week") navigateWeek(-1); else navigateDay(-1); }}
-          className="p-1 rounded hover:bg-green-100 text-green-700">
+          className="p-1 rounded-xl hover:bg-green-100 text-green-700">
           <ChevronLeft className="w-5 h-5" />
         </button>
-        <h2 className="text-lg font-semibold text-green-900">
+        <h2 className="text-lg font-semibold text-gray-900">
           {view === "month" && currentDate.toLocaleDateString("en-US", { month: "long", year: "numeric" })}
           {view === "week" && `${getWeekDays()[0].toLocaleDateString("en-US", { month: "short", day: "numeric" })} — ${getWeekDays()[6].toLocaleDateString("en-US", { month: "short", day: "numeric" })}`}
           {view === "day" && currentDate.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" })}
         </h2>
         <button onClick={() => { if (view === "month") navigateMonth(1); else if (view === "week") navigateWeek(1); else navigateDay(1); }}
-          className="p-1 rounded hover:bg-green-100 text-green-700">
+          className="p-1 rounded-xl hover:bg-green-100 text-green-700">
           <ChevronRight className="w-5 h-5" />
         </button>
       </div>
 
       {/* MONTH VIEW */}
       {view === "month" && (
-        <div className="bg-white rounded-lg shadow overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="grid grid-cols-7 border-b border-gray-200">
             {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
               <div key={d} className="px-2 py-3 text-center text-xs font-semibold text-gray-500">{d}</div>
@@ -162,7 +162,7 @@ export default function CalendarPage() {
 
       {/* WEEK VIEW */}
       {view === "week" && (
-        <div className="bg-white rounded-lg shadow overflow-auto">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-auto">
           <div className="grid grid-cols-8 min-w-[800px]">
             <div className="border-b border-gray-200 p-2 text-xs font-semibold text-gray-500">Time</div>
             {getWeekDays().map((day) => {
@@ -209,7 +209,7 @@ export default function CalendarPage() {
 
       {/* DAY VIEW */}
       {view === "day" && (
-        <div className="bg-white rounded-lg shadow overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           {(() => {
             const dateStr = formatDateStr(currentDate);
             const dayAppts = aptData.filter((a) => a.date === dateStr).sort((a, b) => (a.start_time || "").localeCompare(b.start_time || ""));
@@ -230,7 +230,7 @@ export default function CalendarPage() {
                           <button
                             key={apt.id}
                             onClick={() => setSelectedAppointment(apt)}
-                            className="w-full text-left mb-1 p-2 rounded-lg border-l-4"
+                            className="w-full text-left mb-1 p-2 rounded-xl border-l-4"
                             style={{
                               borderLeftColor: getStatusColor(apt.status),
                               backgroundColor: getStatusColor(apt.status) + "15",
@@ -255,7 +255,7 @@ export default function CalendarPage() {
                     <div className="flex-1 p-2">
                       <button
                         onClick={() => setSelectedAppointment(apt)}
-                        className="w-full text-left p-2 rounded-lg border-l-4 border-l-gray-400 bg-gray-50"
+                        className="w-full text-left p-2 rounded-xl border-l-4 border-l-gray-400 bg-gray-50"
                       >
                         <div className="font-medium text-sm">{apt.title}</div>
                         <span className="status-badge mt-1" style={{ backgroundColor: getStatusColor(apt.status) + "22", color: getStatusColor(apt.status) }}>
@@ -274,9 +274,9 @@ export default function CalendarPage() {
       {/* Appointment detail modal */}
       {selectedAppointment && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setSelectedAppointment(null)}>
-          <div className="bg-white rounded-xl max-w-md w-full p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-start justify-between mb-4">
-              <h3 className="text-lg font-bold text-green-900">{selectedAppointment.title}</h3>
+              <h3 className="text-lg font-bold text-gray-900">{selectedAppointment.title}</h3>
               <button onClick={() => setSelectedAppointment(null)} className="text-gray-400 hover:text-gray-600">
                 <X className="w-5 h-5" />
               </button>
@@ -307,7 +307,7 @@ export default function CalendarPage() {
               {selectedAppointment.notes && (
                 <div>
                   <span className="text-gray-500">Notes</span>
-                  <p className="mt-1 text-gray-700 bg-gray-50 rounded p-2">{selectedAppointment.notes}</p>
+                  <p className="mt-1 text-gray-700 bg-gray-50 rounded-xl p-2">{selectedAppointment.notes}</p>
                 </div>
               )}
             </div>

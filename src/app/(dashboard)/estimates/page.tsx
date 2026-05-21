@@ -40,19 +40,19 @@ export default function EstimatesPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-green-900">Estimates</h1>
-        <button onClick={() => setShowModal(true)} className="flex items-center gap-2 bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800 transition-colors text-sm font-medium">
+        <h1 className="text-2xl font-bold text-gray-900">Estimates</h1>
+        <button onClick={() => setShowModal(true)} className="flex items-center gap-2 btn-accent text-sm">
           <Plus className="w-4 h-4" /> Create Estimate
         </button>
       </div>
 
       {/* Status filter */}
-      <div className="flex overflow-x-auto gap-1 bg-white rounded-lg shadow p-1 scrollbar-hide">
+      <div className="flex overflow-x-auto gap-1 bg-white rounded-2xl shadow-sm border border-gray-100 p-1 scrollbar-hide">
         {["all", "draft", "sent", "accepted", "declined"].map((s) => (
           <button
             key={s}
             onClick={() => setStatusFilter(s)}
-            className={`px-3 py-1.5 rounded text-sm font-medium whitespace-nowrap transition-colors ${
+            className={`px-3 py-1.5 rounded-xl text-sm font-medium whitespace-nowrap transition-colors ${
               statusFilter === s ? "bg-green-700 text-white" : "text-gray-600 hover:bg-gray-100"
             }`}
           >
@@ -69,11 +69,11 @@ export default function EstimatesPage() {
           filtered.map((est) => {
             const cfg = STATUS_CONFIG[est.status] || { label: est.status, color: "#94a3b8" };
             return (
-              <div key={est.id} className="bg-white rounded-lg shadow p-5">
+              <div key={est.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
                 <div className="flex items-start justify-between">
                   <div>
                     <div className="flex items-center gap-2">
-                      <h3 className="font-semibold text-green-900">{est.customer?.name || "No Customer"}</h3>
+                      <h3 className="font-semibold text-gray-900">{est.customer?.name || "No Customer"}</h3>
                       <span className="status-badge" style={{ backgroundColor: cfg.color + "22", color: cfg.color }}>{cfg.label}</span>
                     </div>
                     <p className="text-sm text-gray-500 mt-1">{est.service?.name || "No service"}</p>
@@ -119,37 +119,37 @@ export default function EstimatesPage() {
       {/* Create Estimate Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setShowModal(false)}>
-          <div className="bg-white rounded-xl max-w-md w-full p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-green-900">Create Estimate</h3>
+              <h3 className="text-lg font-bold text-gray-900">Create Estimate</h3>
               <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-gray-600"><X className="w-5 h-5" /></button>
             </div>
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Customer</label>
-                <select value={formData.customer_id} onChange={(e) => setFormData({ ...formData, customer_id: e.target.value })} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                <select value={formData.customer_id} onChange={(e) => setFormData({ ...formData, customer_id: e.target.value })} className="input-field">
                   <option value="">Select customer</option>
                   {customers.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                 </select>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Service</label>
-                <select value={formData.service_id} onChange={(e) => setFormData({ ...formData, service_id: e.target.value })} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                <select value={formData.service_id} onChange={(e) => setFormData({ ...formData, service_id: e.target.value })} className="input-field">
                   <option value="">Select service</option>
                   {services.filter((s) => s.is_active).map((s) => <option key={s.id} value={s.id}>{s.name} — ${s.base_price}</option>)}
                 </select>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Property Address</label>
-                <input type="text" value={formData.property_address} onChange={(e) => setFormData({ ...formData, property_address: e.target.value })} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+                <input type="text" value={formData.property_address} onChange={(e) => setFormData({ ...formData, property_address: e.target.value })} className="input-field" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Estimated Price ($)</label>
-                <input type="number" value={formData.estimated_price} onChange={(e) => setFormData({ ...formData, estimated_price: parseFloat(e.target.value) || 0 })} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" min="0" step="0.01" />
+                <input type="number" value={formData.estimated_price} onChange={(e) => setFormData({ ...formData, estimated_price: parseFloat(e.target.value) || 0 })} className="input-field" min="0" step="0.01" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
-                <textarea value={formData.notes} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} rows={3} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+                <textarea value={formData.notes} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} rows={3} className="input-field" />
               </div>
             </div>
             <div className="flex justify-end gap-3 mt-6">
@@ -160,7 +160,7 @@ export default function EstimatesPage() {
                   setShowModal(false);
                   setFormData({ customer_id: "", service_id: "", property_address: "", estimated_price: 0, notes: "" });
                 }}
-                className="px-4 py-2 bg-green-700 text-white rounded-lg text-sm font-medium hover:bg-green-800"
+                className="btn-accent text-sm"
               >
                 Create Estimate
               </button>

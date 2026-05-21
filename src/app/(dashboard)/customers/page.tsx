@@ -80,8 +80,8 @@ export default function CustomersPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-green-900">Customers</h1>
-        <button onClick={openAddModal} className="flex items-center gap-2 bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800 transition-colors text-sm font-medium">
+        <h1 className="text-2xl font-bold text-gray-900">Customers</h1>
+        <button onClick={openAddModal} className="flex items-center gap-2 btn-accent text-sm">
           <Plus className="w-4 h-4" /> Add Customer
         </button>
       </div>
@@ -92,11 +92,11 @@ export default function CustomersPage() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
             type="text" value={search} onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search customers..." className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:border-green-500 focus:ring-1 focus:ring-green-500 text-sm"
+            placeholder="Search customers..." className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 text-sm"
           />
         </div>
         <div className="relative">
-          <select value={filter} onChange={(e) => setFilter(e.target.value)} className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 text-sm focus:border-green-500 focus:ring-1 focus:ring-green-500">
+          <select value={filter} onChange={(e) => setFilter(e.target.value)} className="appearance-none bg-white border border-gray-300 rounded-xl px-4 py-2.5 pr-8 text-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20">
             {CUSTOMER_FILTERS.map((f) => <option key={f.value} value={f.value}>{f.label}</option>)}
           </select>
           <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
@@ -109,7 +109,7 @@ export default function CustomersPage() {
           <p className="text-gray-400 text-center py-8">No customers found</p>
         ) : (
           filtered.map((customer) => (
-            <div key={customer.id} className="bg-white rounded-lg shadow overflow-hidden">
+            <div key={customer.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
               <button
                 onClick={() => setExpandedId(expandedId === customer.id ? null : customer.id)}
                 className="w-full px-5 py-4 flex items-center gap-4 hover:bg-green-50/50 transition-colors"
@@ -121,7 +121,7 @@ export default function CustomersPage() {
                 </div>
                 <div className="flex-1 text-left min-w-0">
                   <div className="flex items-center gap-2">
-                    <Link href={`/customers/${customer.id}/`} className="font-medium text-green-900 hover:text-green-700" onClick={(e) => e.stopPropagation()}>
+                    <Link href={`/customers/${customer.id}/`} className="font-medium text-gray-900 hover:text-orange-600" onClick={(e) => e.stopPropagation()}>
                       {customer.name}
                     </Link>
                     <span className={`text-xs px-2 py-0.5 rounded-full ${
@@ -163,7 +163,7 @@ export default function CustomersPage() {
                     {customer.notes && <div className="sm:col-span-2 text-gray-500 italic">{customer.notes}</div>}
                   </div>
                   <div className="flex gap-2 mt-3">
-                    <button onClick={() => openEditModal(customer)} className="flex items-center gap-1 text-sm text-green-700 hover:text-green-900">
+                    <button onClick={() => openEditModal(customer)} className="flex items-center gap-1 text-sm text-orange-600 hover:text-orange-700">
                       <Edit className="w-4 h-4" /> Edit
                     </button>
                     <Link href={`/customers/${customer.id}/`} className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800">
@@ -183,40 +183,40 @@ export default function CustomersPage() {
       {/* Add/Edit Modal */}
       {showAddModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-start justify-center p-4 overflow-y-auto" onClick={() => setShowAddModal(false)}>
-          <div className="bg-white rounded-xl max-w-lg w-full p-6 my-8 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white rounded-2xl max-w-lg w-full p-6 my-8 shadow-xl" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-green-900">{editingCustomer ? "Edit Customer" : "Add Customer"}</h3>
+              <h3 className="text-lg font-bold text-gray-900">{editingCustomer ? "Edit Customer" : "Add Customer"}</h3>
               <button onClick={() => { setShowAddModal(false); setEditingCustomer(null); }} className="text-gray-400 hover:text-gray-600"><X className="w-5 h-5" /></button>
             </div>
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
-                <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-green-500 focus:ring-1 focus:ring-green-500" placeholder="Customer name" />
+                <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="input-field" placeholder="Customer name" />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-                  <input type="tel" value={formData.phone || ""} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-green-500 focus:ring-1 focus:ring-green-500" />
+                  <input type="tel" value={formData.phone || ""} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} className="input-field" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                  <input type="email" value={formData.email || ""} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-green-500 focus:ring-1 focus:ring-green-500" />
+                  <input type="email" value={formData.email || ""} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="input-field" />
                 </div>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
-                <input type="text" value={formData.address || ""} onChange={(e) => setFormData({ ...formData, address: e.target.value })} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-green-500 focus:ring-1 focus:ring-green-500" />
+                <input type="text" value={formData.address || ""} onChange={(e) => setFormData({ ...formData, address: e.target.value })} className="input-field" />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Service Frequency</label>
-                  <select value={formData.service_frequency || "weekly"} onChange={(e) => setFormData({ ...formData, service_frequency: e.target.value as ServiceFrequency })} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-green-500 focus:ring-1 focus:ring-green-500">
+                  <select value={formData.service_frequency || "weekly"} onChange={(e) => setFormData({ ...formData, service_frequency: e.target.value as ServiceFrequency })} className="input-field">
                     {SERVICE_FREQUENCIES.map((f) => <option key={f.value} value={f.value}>{f.label}</option>)}
                   </select>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Customer Type</label>
-                  <select value={formData.customer_type || "residential"} onChange={(e) => setFormData({ ...formData, customer_type: e.target.value as CustomerType })} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-green-500 focus:ring-1 focus:ring-green-500">
+                  <select value={formData.customer_type || "residential"} onChange={(e) => setFormData({ ...formData, customer_type: e.target.value as CustomerType })} className="input-field">
                     <option value="residential">Residential</option>
                     <option value="commercial">Commercial</option>
                   </select>
@@ -225,16 +225,16 @@ export default function CustomersPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Property Size</label>
-                  <input type="text" value={formData.property_size || ""} onChange={(e) => setFormData({ ...formData, property_size: e.target.value })} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-green-500 focus:ring-1 focus:ring-green-500" placeholder="e.g., 0.25 acre" />
+                  <input type="text" value={formData.property_size || ""} onChange={(e) => setFormData({ ...formData, property_size: e.target.value })} className="input-field" placeholder="e.g., 0.25 acre" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Gate Code</label>
-                  <input type="text" value={formData.gate_code || ""} onChange={(e) => setFormData({ ...formData, gate_code: e.target.value })} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-green-500 focus:ring-1 focus:ring-green-500" />
+                  <input type="text" value={formData.gate_code || ""} onChange={(e) => setFormData({ ...formData, gate_code: e.target.value })} className="input-field" />
                 </div>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Preferred Day</label>
-                <select value={formData.preferred_day || ""} onChange={(e) => setFormData({ ...formData, preferred_day: e.target.value })} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-green-500 focus:ring-1 focus:ring-green-500">
+                <select value={formData.preferred_day || ""} onChange={(e) => setFormData({ ...formData, preferred_day: e.target.value })} className="input-field">
                   <option value="">No preference</option>
                   {DAYS_OF_WEEK.map((d) => <option key={d} value={d}>{d}</option>)}
                 </select>
@@ -246,19 +246,19 @@ export default function CustomersPage() {
                     <button key={st} onClick={() => toggleServiceType(st)} className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
                       formData.service_type?.includes(st)
                         ? "bg-green-700 text-white border-green-700"
-                        : "bg-white text-gray-600 border-gray-300 hover:border-green-500"
+                        : "bg-white text-gray-600 border-gray-300 hover:border-orange-500"
                     }`}>{st}</button>
                   ))}
                 </div>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
-                <textarea value={formData.notes || ""} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} rows={3} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-green-500 focus:ring-1 focus:ring-green-500" />
+                <textarea value={formData.notes || ""} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} rows={3} className="input-field" />
               </div>
             </div>
             <div className="flex justify-end gap-3 mt-6">
               <button onClick={() => { setShowAddModal(false); setEditingCustomer(null); }} className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800">Cancel</button>
-              <button onClick={handleSave} className="px-4 py-2 bg-green-700 text-white rounded-lg text-sm font-medium hover:bg-green-800 transition-colors">
+              <button onClick={handleSave} className="btn-primary text-sm">
                 {editingCustomer ? "Update" : "Add"} Customer
               </button>
             </div>

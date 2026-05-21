@@ -46,16 +46,16 @@ export default function RemindersPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-green-900">Reminders</h1>
-        <button onClick={() => setShowModal(true)} className="flex items-center gap-2 bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800 transition-colors text-sm font-medium">
+        <h1 className="text-2xl font-bold text-gray-900">Reminders</h1>
+        <button onClick={() => setShowModal(true)} className="flex items-center gap-2 btn-accent text-sm">
           <Plus className="w-4 h-4" /> Add Reminder
         </button>
       </div>
 
       {/* Type filter */}
-      <div className="flex overflow-x-auto gap-1 bg-white rounded-lg shadow p-1 scrollbar-hide">
+      <div className="flex overflow-x-auto gap-1 bg-white rounded-2xl shadow-sm border border-gray-100 p-1 scrollbar-hide">
         {["all", "appointment", "payment", "follow_up", "equipment", "recurring", "seasonal"].map((t) => (
-          <button key={t} onClick={() => setTypeFilter(t)} className={`px-3 py-1.5 rounded text-sm font-medium whitespace-nowrap transition-colors ${
+          <button key={t} onClick={() => setTypeFilter(t)} className={`px-3 py-1.5 rounded-xl text-sm font-medium whitespace-nowrap transition-colors ${
             typeFilter === t ? "bg-green-700 text-white" : "text-gray-600 hover:bg-gray-100"
           }`}>
             {t === "all" ? "All" : TYPE_LABELS[t] || t}
@@ -72,13 +72,13 @@ export default function RemindersPage() {
             const Icon = TYPE_ICONS[r.reminder_type] || Bell;
             const colorClass = TYPE_COLORS[r.reminder_type] || "bg-gray-100 text-gray-700";
             return (
-              <div key={r.id} className={`bg-white rounded-lg shadow p-4 flex items-start gap-3 ${r.is_read ? "opacity-70" : ""}`}>
-                <div className={`p-2 rounded-lg ${colorClass}`}>
+              <div key={r.id} className={`bg-white rounded-2xl shadow-sm border border-gray-100 p-4 flex items-start gap-3 ${r.is_read ? "opacity-70" : ""}`}>
+                <div className={`p-2 rounded-xl ${colorClass}`}>
                   <Icon className="w-4 h-4" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <p className={`font-medium ${r.is_read ? "text-gray-500" : "text-green-900"}`}>{r.title}</p>
+                    <p className={`font-medium ${r.is_read ? "text-gray-500" : "text-gray-900"}`}>{r.title}</p>
                     {!r.is_read && <span className="w-2 h-2 bg-yellow-400 rounded-full" />}
                   </div>
                   <div className="flex flex-wrap gap-2 mt-0.5 text-xs text-gray-500">
@@ -89,7 +89,7 @@ export default function RemindersPage() {
                 </div>
                 <div className="flex items-center gap-1">
                   {!r.is_read && (
-                    <button onClick={() => markAsRead(r.id)} className="text-xs text-green-600 hover:text-green-800 px-2 py-1 rounded bg-green-50">
+                    <button onClick={() => markAsRead(r.id)} className="text-xs text-orange-600 hover:text-orange-700 px-2 py-1 rounded-xl bg-orange-50">
                       Mark read
                     </button>
                   )}
@@ -106,29 +106,29 @@ export default function RemindersPage() {
       {/* Add Reminder Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setShowModal(false)}>
-          <div className="bg-white rounded-xl max-w-md w-full p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-green-900">Add Reminder</h3>
+              <h3 className="text-lg font-bold text-gray-900">Add Reminder</h3>
               <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-gray-600"><X className="w-5 h-5" /></button>
             </div>
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Title *</label>
-                <input type="text" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" placeholder="Reminder title" />
+                <input type="text" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} className="input-field" placeholder="Reminder title" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
-                <select value={formData.reminder_type} onChange={(e) => setFormData({ ...formData, reminder_type: e.target.value as ReminderType })} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                <select value={formData.reminder_type} onChange={(e) => setFormData({ ...formData, reminder_type: e.target.value as ReminderType })} className="input-field">
                   {Object.entries(TYPE_LABELS).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
                 </select>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
-                <input type="date" value={formData.due_date} onChange={(e) => setFormData({ ...formData, due_date: e.target.value })} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+                <input type="date" value={formData.due_date} onChange={(e) => setFormData({ ...formData, due_date: e.target.value })} className="input-field" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Linked Customer</label>
-                <select value={formData.customer_id} onChange={(e) => setFormData({ ...formData, customer_id: e.target.value })} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                <select value={formData.customer_id} onChange={(e) => setFormData({ ...formData, customer_id: e.target.value })} className="input-field">
                   <option value="">None</option>
                   {customers.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                 </select>
@@ -143,7 +143,7 @@ export default function RemindersPage() {
                   setShowModal(false);
                   setFormData({ title: "", reminder_type: "appointment", due_date: "", customer_id: "" });
                 }}
-                className="px-4 py-2 bg-green-700 text-white rounded-lg text-sm font-medium hover:bg-green-800"
+                className="btn-primary text-sm"
               >
                 Add Reminder
               </button>

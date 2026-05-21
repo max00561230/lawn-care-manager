@@ -5,6 +5,7 @@ import Link from "next/link";
 import {
   LayoutDashboard, Calendar, Users, Clock, Scissors, FileText,
   CheckSquare, Bell, CreditCard, BarChart3, Settings, LogOut, User,
+  QrCode,
 } from "lucide-react";
 import { NAV_ITEMS, APP_NAME } from "@/lib/constants";
 import { useAuth } from "@/lib/storage";
@@ -23,19 +24,21 @@ export default function Shell({ children }: { children: ReactNode }) {
   const displayEmail = owner?.email || "";
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       {/* Desktop sidebar */}
-      <aside className="hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 lg:w-64 bg-green-900 text-white">
-        {/* Logo */}
-        <div className="flex items-center gap-3 px-6 py-5 border-b border-green-800">
-          <img src="/jrt-logo.png" alt="JRT" className="w-10 h-10 rounded" />
+      <aside className="hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 lg:w-64 bg-gray-900 text-white z-50">
+        {/* Brand */}
+        <div className="flex items-center gap-3 px-6 py-5 border-b border-gray-800">
+          <div className="w-10 h-10 rounded-xl bg-green-700 flex items-center justify-center text-white text-lg font-bold">
+            🌿
+          </div>
           <div>
-            <h1 className="text-lg font-bold text-yellow-400">{APP_NAME}</h1>
-            <p className="text-xs text-green-300">{displayName}</p>
+            <h1 className="text-lg font-bold text-orange-400">{APP_NAME}</h1>
+            <p className="text-xs text-gray-400">Admin Panel</p>
           </div>
         </div>
 
-        {/* Nav */}
+        {/* Navigation */}
         <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
           {NAV_ITEMS.map((item) => {
             const Icon = ICON_MAP[item.icon] || LayoutDashboard;
@@ -44,10 +47,10 @@ export default function Shell({ children }: { children: ReactNode }) {
               <Link
                 key={item.href}
                 href={item.href + "/"}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
                   active
-                    ? "bg-green-700 text-yellow-400"
-                    : "text-green-200 hover:bg-green-800 hover:text-white"
+                    ? "bg-orange-500 text-white shadow-lg shadow-orange-500/25"
+                    : "text-gray-400 hover:bg-gray-800 hover:text-white"
                 }`}
               >
                 <Icon className="w-5 h-5" />
@@ -57,17 +60,28 @@ export default function Shell({ children }: { children: ReactNode }) {
           })}
         </nav>
 
+        {/* Flyer link */}
+        <div className="px-3 py-2">
+          <Link
+            href="/flyer/"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:bg-gray-800 hover:text-orange-400 transition-all duration-200"
+          >
+            <QrCode className="w-5 h-5" />
+            QR Flyer
+          </Link>
+        </div>
+
         {/* User info */}
-        <div className="px-4 py-4 border-t border-green-800">
+        <div className="px-4 py-4 border-t border-gray-800">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-full bg-green-700 flex items-center justify-center">
               <User className="w-5 h-5 text-green-200" />
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-white truncate">{displayName}</p>
-              <p className="text-xs text-green-300 truncate">{displayEmail}</p>
+              <p className="text-xs text-gray-500 truncate">{displayEmail}</p>
             </div>
-            <button onClick={() => { logout(); window.location.href = "/login/"; }} className="text-green-400 hover:text-white">
+            <button onClick={() => { logout(); window.location.href = "/login/"; }} className="text-gray-500 hover:text-orange-400 transition-colors">
               <LogOut className="w-5 h-5" />
             </button>
           </div>
@@ -75,23 +89,32 @@ export default function Shell({ children }: { children: ReactNode }) {
       </aside>
 
       {/* Mobile top bar */}
-      <header className="lg:hidden sticky top-0 z-40 bg-green-900 text-white">
+      <header className="lg:hidden sticky top-0 z-40 bg-gray-900/95 backdrop-blur-md text-white border-b border-gray-800">
         <div className="flex items-center gap-3 px-4 py-3">
-          <img src="/jrt-logo.png" alt="JRT" className="w-8 h-8 rounded" />
-          <h1 className="text-base font-bold text-yellow-400">{APP_NAME}</h1>
+          <div className="w-8 h-8 rounded-lg bg-green-700 flex items-center justify-center text-sm">
+            🌿
+          </div>
+          <h1 className="text-base font-bold text-orange-400">{APP_NAME}</h1>
           <div className="ml-auto flex items-center gap-2">
-            <span className="text-xs text-green-300 hidden sm:inline">{displayName}</span>
+            <Link
+              href="/flyer/"
+              className="text-gray-400 hover:text-orange-400 p-1"
+              title="QR Flyer"
+            >
+              <QrCode className="w-5 h-5" />
+            </Link>
+            <span className="text-xs text-gray-400 hidden sm:inline">{displayName}</span>
             <button
               onClick={() => { logout(); window.location.href = "/login/"; }}
-              className="text-green-300 hover:text-white p-1"
+              className="text-gray-400 hover:text-white p-1"
               title="Log out"
             >
               <LogOut className="w-5 h-5" />
             </button>
           </div>
         </div>
-        {/* Horizontal scroll nav */}
-        <nav className="flex overflow-x-auto gap-1 px-3 pb-2 scrollbar-hide">
+        {/* Horizontal scroll nav — mobile-first, always visible */}
+        <nav className="flex overflow-x-auto gap-1 px-3 pb-2.5 scrollbar-hide">
           {NAV_ITEMS.map((item) => {
             const Icon = ICON_MAP[item.icon] || LayoutDashboard;
             const active = pathname === item.href + "/" || pathname === item.href || pathname?.startsWith(item.href + "/");
@@ -99,10 +122,10 @@ export default function Shell({ children }: { children: ReactNode }) {
               <Link
                 key={item.href}
                 href={item.href + "/"}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 ${
                   active
-                    ? "bg-yellow-400 text-green-900"
-                    : "bg-green-800 text-green-200 hover:bg-green-700"
+                    ? "bg-orange-500 text-white shadow-md shadow-orange-500/25"
+                    : "bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-white"
                 }`}
               >
                 <Icon className="w-3.5 h-3.5" />

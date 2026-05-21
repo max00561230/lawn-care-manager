@@ -37,16 +37,16 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-800 to-green-950 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-950 flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl max-w-md w-full p-8 border border-gray-100 shadow-xl">
         <div className="text-center mb-8">
-          <img src="/jrt-logo.png" alt="JRT" className="w-16 h-16 mx-auto mb-4 rounded-lg" />
-          <h1 className="text-2xl font-bold text-green-900">LawnCare Manager Pro</h1>
+          <img src="/jrt-logo.png" alt="JRT" className="w-16 h-16 mx-auto mb-4 rounded-xl" />
+          <h1 className="text-2xl font-bold text-gray-900">LawnCare Manager Pro</h1>
           <p className="text-sm text-gray-500 mt-1">Sign in to manage your business</p>
         </div>
 
         {error && (
-          <div className="bg-red-50 text-red-700 px-4 py-2 rounded-lg text-sm mb-4">{error}</div>
+          <div className="bg-red-50 text-red-700 px-4 py-2 rounded-xl text-sm mb-4">{error}</div>
         )}
 
         <form onSubmit={handleLogin} className="space-y-4">
@@ -56,7 +56,7 @@ export default function LoginPage() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:border-green-500 focus:ring-1 focus:ring-green-500"
+              className="input-field"
               placeholder={owner?.email || "your@email.com"}
             />
           </div>
@@ -66,13 +66,13 @@ export default function LoginPage() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:border-green-500 focus:ring-1 focus:ring-green-500"
+              className="input-field"
               placeholder="••••••••"
             />
           </div>
           <button
             type="submit"
-            className="w-full bg-green-700 text-white py-2.5 rounded-lg font-medium hover:bg-green-800 transition-colors"
+            className="w-full btn-accent py-2.5 text-center"
           >
             Sign In
           </button>
@@ -80,7 +80,7 @@ export default function LoginPage() {
 
         <div className="mt-8 pt-6 border-t border-gray-100 text-center">
           <p className="text-xs text-gray-400">Are you a customer?</p>
-          <a href="/book/" className="text-sm text-green-600 hover:text-green-800 font-medium">
+          <a href="/book/" className="text-sm text-orange-600 hover:text-orange-700 font-medium">
             Book a service →
           </a>
         </div>
