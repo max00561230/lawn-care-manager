@@ -71,6 +71,7 @@ export const NAV_ITEMS = [
   { href: '/tasks', label: 'Tasks', icon: '✅' },
   { href: '/reminders', label: 'Reminders', icon: '🔔' },
   { href: '/payments', label: 'Payments', icon: '💳' },
+  { href: '/bills', label: 'Bills', icon: '🧾' },
   { href: '/reports', label: 'Reports', icon: '📈' },
   { href: '/settings', label: 'Settings', icon: '⚙️' },
 ] as const;

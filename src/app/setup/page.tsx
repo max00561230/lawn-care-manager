@@ -6,11 +6,10 @@ import { useAuth } from "@/lib/storage";
 
 export default function SetupPage() {
   const router = useRouter();
-  const { signup } = useAuth();
+  const { setup } = useAuth();
   const [businessName, setBusinessName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [pin, setPin] = useState("");
+  const [confirmPin, setConfirmPin] = useState("");
   const [error, setError] = useState("");
 
   const handleSetup = (e: React.FormEvent) => {
@@ -21,20 +20,20 @@ export default function SetupPage() {
       setError("Business name is required");
       return;
     }
-    if (!email.trim()) {
-      setError("Email is required");
+    if (pin.length < 4) {
+      setError("PIN must be at least 4 digits");
       return;
     }
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters");
+    if (!/^\d+$/.test(pin)) {
+      setError("PIN must be numbers only");
       return;
     }
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
+    if (pin !== confirmPin) {
+      setError("PINs do not match");
       return;
     }
 
-    signup(email.trim(), password, businessName.trim());
+    setup(businessName.trim(), pin);
     router.push("/dashboard/");
   };
 
@@ -46,7 +45,7 @@ export default function SetupPage() {
             🌿
           </div>
           <h1 className="text-2xl font-extrabold text-gray-900">LawnCare Manager Pro</h1>
-          <p className="text-sm text-gray-500 mt-1">Set up your account to get started</p>
+          <p className="text-sm text-gray-500 mt-1">Set up your business to get started</p>
         </div>
 
         {error && (
@@ -63,35 +62,30 @@ export default function SetupPage() {
               className="input-field"
               placeholder="Whitney's Lawn Care"
             />
+            <p className="text-xs text-gray-400 mt-1">This will appear at the top of your app</p>
           </div>
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Email</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">Create PIN</label>
             <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type="password"
+              inputMode="numeric"
+              maxLength={10}
+              value={pin}
+              onChange={(e) => setPin(e.target.value.replace(/\D/g, ""))}
               className="input-field"
-              placeholder="owner@lawncare.com"
+              placeholder="Min 4 digits"
             />
           </div>
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Password</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">Confirm PIN</label>
             <input
               type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              inputMode="numeric"
+              maxLength={10}
+              value={confirmPin}
+              onChange={(e) => setConfirmPin(e.target.value.replace(/\D/g, ""))}
               className="input-field"
-              placeholder="Min 6 characters"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Confirm Password</label>
-            <input
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="input-field"
-              placeholder="Re-enter password"
+              placeholder="Re-enter PIN"
             />
           </div>
           <button

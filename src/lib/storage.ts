@@ -10,11 +10,13 @@ import {
   Task,
   Reminder,
   Payment,
+  Bill,
   CustomerFormData,
   AppointmentFormData,
   ServiceFormData,
   TaskFormData,
   EstimateFormData,
+  BillFormData,
   ReminderType,
   PaymentType,
   PaymentStatus,
@@ -35,51 +37,42 @@ const STORAGE_KEYS = {
   tasks: "lcm_tasks",
   reminders: "lcm_reminders",
   payments: "lcm_payments",
+  bills: "lcm_bills",
   settings: "lcm_settings",
   seeded: "lcm_seeded_v1",
   auth: "lcm_auth",
   owner: "lcm_owner",
 };
 
-// --- Owner Account ---
+// --- Owner Account (PIN-based) ---
 export interface OwnerAccount {
-  email: string;
-  passwordHash: string;
   businessName: string;
+  ownerPin: string;
+  pinEnabled: boolean;
   createdAt: string;
 }
 
-function simpleHash(str: string): string {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash = hash & hash;
-  }
-  return hash.toString(36);
-}
-
-// --- Auth ---
+// --- Auth (PIN-based like FV) ---
 export function useAuth() {
   const [isLoggedIn, setIsLoggedIn] = useLocalStorage<boolean>(STORAGE_KEYS.auth, false);
   const [owner, setOwner] = useLocalStorage<OwnerAccount | null>(STORAGE_KEYS.owner, null);
 
   const isSetupComplete = owner !== null;
 
-  const signup = useCallback((email: string, password: string, businessName: string) => {
+  const setup = useCallback((businessName: string, pin: string) => {
     const account: OwnerAccount = {
-      email,
-      passwordHash: simpleHash(password),
       businessName,
+      ownerPin: pin,
+      pinEnabled: true,
       createdAt: new Date().toISOString().split("T")[0],
     };
     setOwner(account);
     setIsLoggedIn(true);
   }, [setOwner, setIsLoggedIn]);
 
-  const login = useCallback((email: string, password: string): boolean => {
+  const login = useCallback((pin: string): boolean => {
     if (!owner) return false;
-    if (owner.email !== email || owner.passwordHash !== simpleHash(password)) return false;
+    if (pin !== owner.ownerPin) return false;
     setIsLoggedIn(true);
     return true;
   }, [owner, setIsLoggedIn]);
@@ -88,7 +81,25 @@ export function useAuth() {
     setIsLoggedIn(false);
   }, [setIsLoggedIn]);
 
-  return { isLoggedIn, isSetupComplete, owner, signup, login, logout };
+  const updatePin = useCallback((newPin: string) => {
+    if (owner) {
+      setOwner({ ...owner, ownerPin: newPin });
+    }
+  }, [owner, setOwner]);
+
+  const togglePinEnabled = useCallback((enabled: boolean) => {
+    if (owner) {
+      setOwner({ ...owner, pinEnabled: enabled });
+    }
+  }, [owner, setOwner]);
+
+  const updateBusinessName = useCallback((name: string) => {
+    if (owner) {
+      setOwner({ ...owner, businessName: name });
+    }
+  }, [owner, setOwner]);
+
+  return { isLoggedIn, isSetupComplete, owner, setup, login, logout, updatePin, togglePinEnabled, updateBusinessName };
 }
 
 // --- Seed Data ---
@@ -582,6 +593,72 @@ export function usePayments() {
   }, [setPayments]);
 
   return { payments: enriched, addPayment, updatePayment, deletePayment };
+}
+
+// --- BILLS ---
+function generateBillNumber(): string {
+  const now = new Date();
+  const prefix = "INV";
+  const date = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}`;
+  const rand = Math.floor(Math.random() * 10000).toString().padStart(4, "0");
+  return `${prefix}-${date}-${rand}`;
+}
+
+export function useBills() {
+  const [bills, setBills] = useLocalStorage<Bill[]>(STORAGE_KEYS.bills, []);
+  const [customers] = useLocalStorage<Customer[]>(STORAGE_KEYS.customers, []);
+
+  const enriched = bills.map((b) => ({
+    ...b,
+    customer: customers.find((c) => c.id === b.customer_id),
+  }));
+
+  const addBill = useCallback((data: BillFormData): Bill => {
+    const subtotal = data.items.reduce((sum, item) => sum + item.total, 0);
+    const taxRate = data.tax_rate ?? 0;
+    const taxAmount = Math.round(subtotal * taxRate * 100) / 100;
+    const total = subtotal + taxAmount;
+    const newBill: Bill = {
+      id: generateId(),
+      owner_id: "owner",
+      bill_number: generateBillNumber(),
+      customer_id: data.customer_id,
+      items: data.items,
+      subtotal,
+      tax_rate: taxRate,
+      tax_amount: taxAmount,
+      total,
+      notes: data.notes,
+      status: data.status ?? "draft",
+      due_date: data.due_date,
+      created_at: new Date().toISOString().split("T")[0],
+      updated_at: new Date().toISOString().split("T")[0],
+    };
+    setBills((prev) => [...prev, newBill]);
+    return newBill;
+  }, [setBills]);
+
+  const updateBill = useCallback((id: string, data: Partial<Bill>): void => {
+    setBills((prev) =>
+      prev.map((b) => {
+        if (b.id !== id) return b;
+        const updated = { ...b, ...data, updated_at: new Date().toISOString().split("T")[0] };
+        // Recalculate totals if items changed
+        if (data.items) {
+          updated.subtotal = data.items.reduce((sum, item) => sum + item.total, 0);
+          updated.tax_amount = Math.round(updated.subtotal * updated.tax_rate * 100) / 100;
+          updated.total = updated.subtotal + updated.tax_amount;
+        }
+        return updated;
+      })
+    );
+  }, [setBills]);
+
+  const deleteBill = useCallback((id: string): void => {
+    setBills((prev) => prev.filter((b) => b.id !== id));
+  }, [setBills]);
+
+  return { bills: enriched, addBill, updateBill, deleteBill };
 }
 
 // --- SETTINGS ---

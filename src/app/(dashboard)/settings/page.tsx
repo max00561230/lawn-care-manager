@@ -1,12 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { useSettings, exportAllData, importAllData, resetAllData } from "@/lib/storage";
+import { useSettings, useAuth, exportAllData, importAllData, resetAllData } from "@/lib/storage";
 
 export default function SettingsPage() {
   const { settings, updateSettings } = useSettings();
+  const { owner, updatePin, updateBusinessName } = useAuth();
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [importText, setImportText] = useState("");
+  const [newPin, setNewPin] = useState("");
+  const [pinSaved, setPinSaved] = useState(false);
 
   const handleExport = () => {
     const data = exportAllData();
@@ -34,6 +37,53 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6 max-w-2xl">
       <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
+
+      {/* Account / PIN */}
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+        <h2 className="font-semibold text-gray-900 mb-4">Account</h2>
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Business Name</label>
+            <input
+              type="text"
+              value={owner?.businessName || ""}
+              onChange={(e) => updateBusinessName(e.target.value)}
+              className="input-field"
+              placeholder="Your business name"
+            />
+            <p className="text-xs text-gray-400 mt-1">This appears on your app banner and bills</p>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Change PIN</label>
+            <div className="flex gap-2">
+              <input
+                type="password"
+                inputMode="numeric"
+                maxLength={10}
+                value={newPin}
+                onChange={(e) => { setNewPin(e.target.value.replace(/\D/g, "")); setPinSaved(false); }}
+                className="input-field flex-1"
+                placeholder="Enter new PIN"
+              />
+              <button
+                onClick={() => {
+                  if (newPin.length >= 4) {
+                    updatePin(newPin);
+                    setNewPin("");
+                    setPinSaved(true);
+                    setTimeout(() => setPinSaved(false), 3000);
+                  } else {
+                    alert("PIN must be at least 4 digits");
+                  }
+                }}
+                className="btn-primary text-sm whitespace-nowrap"
+              >
+                {pinSaved ? "✓ Saved" : "Update PIN"}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Business Info */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">

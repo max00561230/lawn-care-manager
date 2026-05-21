@@ -10,6 +10,7 @@ export type TaskStatus = 'not_started' | 'in_progress' | 'complete';
 export type EstimateStatus = 'draft' | 'sent' | 'accepted' | 'declined';
 export type ReminderType = 'appointment' | 'payment' | 'follow_up' | 'equipment' | 'recurring' | 'seasonal';
 export type PaymentType = 'full' | 'deposit' | 'recurring';
+export type BillStatus = 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled';
 
 export interface Customer {
   id: string;
@@ -125,6 +126,33 @@ export interface Payment {
   customer?: Customer;
 }
 
+export interface BillItem {
+  id: string;
+  description: string;
+  quantity: number;
+  unit_price: number;
+  total: number;
+}
+
+export interface Bill {
+  id: string;
+  owner_id: string;
+  bill_number: string;
+  customer_id?: string;
+  items: BillItem[];
+  subtotal: number;
+  tax_rate: number;
+  tax_amount: number;
+  total: number;
+  notes?: string;
+  status: BillStatus;
+  due_date?: string;
+  paid_at?: string;
+  created_at: string;
+  updated_at: string;
+  customer?: Customer;
+}
+
 export interface Message {
   id: string;
   owner_id: string;
@@ -184,4 +212,13 @@ export interface EstimateFormData {
   property_address?: string;
   estimated_price?: number;
   notes?: string;
+}
+
+export interface BillFormData {
+  customer_id?: string;
+  items: BillItem[];
+  tax_rate?: number;
+  notes?: string;
+  due_date?: string;
+  status?: BillStatus;
 }
