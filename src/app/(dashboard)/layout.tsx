@@ -1,6 +1,8 @@
 "use client";
 
 import Shell from "@/components/Shell";
+import { PlanProvider } from "@/components/PlanProvider";
+import { UpgradePrompt } from "@/components/UpgradePrompt";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth, ensureSeeded } from "@/lib/storage";
@@ -13,7 +15,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   useEffect(() => {
     ensureSeeded();
-    if (BYPASS_AUTH) return; // Skip auth redirect when bypassed
+    if (BYPASS_AUTH) return;
     if (!isSetupComplete) {
       router.replace("/setup/");
     } else if (!isLoggedIn) {
@@ -22,7 +24,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }, [isLoggedIn, isSetupComplete, router]);
 
   if (BYPASS_AUTH) {
-    return <Shell>{children}</Shell>;
+    return (
+      <PlanProvider>
+        <Shell>{children}</Shell>
+        <UpgradePrompt />
+      </PlanProvider>
+    );
   }
 
   if (!isLoggedIn || !isSetupComplete) {
@@ -36,5 +43,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     );
   }
 
-  return <Shell>{children}</Shell>;
+  return (
+    <PlanProvider>
+      <Shell>{children}</Shell>
+      <UpgradePrompt />
+    </PlanProvider>
+  );
 }

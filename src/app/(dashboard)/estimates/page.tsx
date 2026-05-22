@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useEstimates, useCustomers, useServices, useAppointments } from "@/lib/storage";
 import { EstimateStatus } from "@/types";
 import { Plus, X, ArrowRight } from "lucide-react";
+import { usePlan } from "@/components/PlanProvider";
+import { PLAN_LIMITS } from "@/lib/plan-limits";
 
 const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
   draft: { label: "Draft", color: "#94a3b8" },
@@ -17,6 +19,7 @@ export default function EstimatesPage() {
   const { customers } = useCustomers();
   const { services } = useServices();
   const { addAppointment } = useAppointments();
+  const { tier, showUpgrade } = usePlan();
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
@@ -37,11 +40,20 @@ export default function EstimatesPage() {
     updateEstimate(estimate.id, { status: "accepted" as EstimateStatus });
   };
 
+  const handleAddEstimate = () => {
+    const estimateLimit = PLAN_LIMITS.free.quotes;
+    if (tier === "free" && estimateLimit !== null && estimates.length >= (estimateLimit as number)) {
+      showUpgrade("estimates");
+      return;
+    }
+    setShowModal(true);
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900">Estimates</h1>
-        <button onClick={() => setShowModal(true)} className="flex items-center gap-2 btn-accent text-sm">
+        <button onClick={handleAddEstimate} className="flex items-center gap-2 btn-accent text-sm">
           <Plus className="w-4 h-4" /> Create Estimate
         </button>
       </div>

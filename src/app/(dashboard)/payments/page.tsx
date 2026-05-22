@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { usePayments, useCustomers } from "@/lib/storage";
 import { PaymentStatus, PaymentType } from "@/types";
-import { Plus, X } from "lucide-react";
+import { Plus, X, Lock } from "lucide-react";
+import { usePlan } from "@/components/PlanProvider";
 
 const STATUS_TABS = [
   { value: "all", label: "All" },
@@ -21,6 +22,7 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 export default function PaymentsPage() {
+  const { tier, showUpgrade } = usePlan();
   const { payments, addPayment, updatePayment, deletePayment } = usePayments();
   const { customers } = useCustomers();
   const [statusFilter, setStatusFilter] = useState("all");
@@ -30,6 +32,35 @@ export default function PaymentsPage() {
   const [formData, setFormData] = useState({
     customer_id: "", amount: 0, payment_type: "full" as PaymentType, status: "unpaid" as PaymentStatus, description: "", paid_at: "",
   });
+
+  // Free Plan: lock payments behind upgrade wall
+  if (tier === "free") {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 px-4 text-center">
+        <div className="w-16 h-16 rounded-full bg-amber-100 flex items-center justify-center mb-6">
+          <Lock className="w-8 h-8 text-amber-600" />
+        </div>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">Payment Collection</h2>
+        <p className="text-gray-500 max-w-md mb-6">
+          Accept payments, track invoices, and manage billing — all from LawnCare Manager Pro.
+        </p>
+        <p className="text-sm text-gray-400 mb-8 max-w-sm">
+          Upgrade to unlock unlimited customers, services, quotes, and payment collection.
+        </p>
+        <button
+          onClick={() => showUpgrade("payments")}
+          className="px-8 py-3 bg-gradient-to-r from-green-600 to-emerald-500 text-white font-bold rounded-xl shadow-lg shadow-green-500/25 hover:shadow-xl hover:shadow-green-500/30 transition-all duration-200 text-lg"
+        >
+          Upgrade to Pro
+        </button>
+        <div className="mt-8 flex items-center gap-4 text-sm text-gray-400">
+          <span>✓ Unlimited Customers</span>
+          <span>✓ Payment Collection</span>
+          <span>✓ Priority Support</span>
+        </div>
+      </div>
+    );
+  }
 
   const filtered = payments.filter((p) => {
     if (statusFilter !== "all" && p.status !== statusFilter) return false;

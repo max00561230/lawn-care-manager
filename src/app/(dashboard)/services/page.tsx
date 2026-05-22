@@ -4,14 +4,24 @@ import { useState } from "react";
 import { useServices } from "@/lib/storage";
 import { ServiceFormData } from "@/types";
 import { Plus, Edit, Trash2, X } from "lucide-react";
+import { usePlan } from "@/components/PlanProvider";
+import { PLAN_LIMITS } from "@/lib/plan-limits";
 
 export default function ServicesPage() {
   const { services, addService, updateService, deleteService, toggleService } = useServices();
+  const { tier, showUpgrade } = usePlan();
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState<ServiceFormData>({ name: "", base_price: 0, description: "", estimated_time: "", is_recurring: false });
 
-  const openAdd = () => { setFormData({ name: "", base_price: 0, description: "", estimated_time: "", is_recurring: false }); setEditingId(null); setShowModal(true); };
+  const openAdd = () => {
+    const serviceLimit = PLAN_LIMITS.free.services;
+    if (tier === "free" && serviceLimit !== null && services.length >= (serviceLimit as number)) {
+      showUpgrade("services");
+      return;
+    }
+    setFormData({ name: "", base_price: 0, description: "", estimated_time: "", is_recurring: false }); setEditingId(null); setShowModal(true);
+  };
   const openEdit = (id: string) => {
     const svc = services.find((s) => s.id === id);
     if (!svc) return;

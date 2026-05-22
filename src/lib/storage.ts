@@ -21,7 +21,6 @@ import {
   PaymentType,
   PaymentStatus,
 } from "@/types";
-import { DEFAULT_SERVICES } from "@/lib/constants";
 
 // --- ID helper ---
 function generateId(): string {
@@ -39,7 +38,7 @@ const STORAGE_KEYS = {
   payments: "lcm_payments",
   bills: "lcm_bills",
   settings: "lcm_settings",
-  seeded: "lcm_seeded_v1",
+  seeded: "lcm_seeded_v2",
   auth: "lcm_auth",
   owner: "lcm_owner",
 };
@@ -102,7 +101,7 @@ export function useAuth() {
   return { isLoggedIn, isSetupComplete, owner, setup, login, logout, updatePin, togglePinEnabled, updateBusinessName };
 }
 
-// --- Seed Data ---
+// --- Seed Data (Free Plan Demo — 3 customers, 3 services, 3 estimates) ---
 const TODAY = new Date();
 const fmt = (d: Date) => d.toISOString().split("T")[0];
 const addDays = (d: Date, n: number) => { const r = new Date(d); r.setDate(r.getDate() + n); return r; };
@@ -110,169 +109,94 @@ const addDays = (d: Date, n: number) => { const r = new Date(d); r.setDate(r.get
 function seedData() {
   const customers: Customer[] = [
     {
-      id: "cust_1", owner_id: "owner", name: "John Smith", address: "123 Oak Lane, Springfield",
+      id: "demo_cust_1", owner_id: "owner", name: "John Smith", address: "123 Oak Lane, Springfield",
       phone: "(555) 123-4567", email: "john@email.com", service_frequency: "weekly",
       service_type: ["Lawn Mowing", "Edging"], last_service_date: fmt(addDays(TODAY, -3)),
       next_service_date: fmt(addDays(TODAY, 4)), payment_status: "paid", property_size: "0.25 acre",
       gate_code: "1234", preferred_day: "Tuesday", customer_since: fmt(addDays(TODAY, -180)),
-      customer_type: "residential", status: "active", created_at: fmt(addDays(TODAY, -180)), updated_at: fmt(addDays(TODAY, -1)),
+      customer_type: "residential", status: "active", is_demo: true,
+      created_at: fmt(addDays(TODAY, -180)), updated_at: fmt(addDays(TODAY, -1)),
     },
     {
-      id: "cust_2", owner_id: "owner", name: "Greenfield Office Park", address: "456 Commerce Blvd, Springfield",
+      id: "demo_cust_2", owner_id: "owner", name: "Greenfield Office Park", address: "456 Commerce Blvd, Springfield",
       phone: "(555) 987-6543", email: "manager@greenfield.com", service_frequency: "bi_weekly",
       service_type: ["Commercial Lawn Maintenance", "Hedge Trimming"], last_service_date: fmt(addDays(TODAY, -7)),
       next_service_date: fmt(addDays(TODAY, 7)), payment_status: "unpaid", property_size: "2 acres",
       preferred_day: "Thursday", customer_since: fmt(addDays(TODAY, -365)),
-      customer_type: "commercial", status: "active", created_at: fmt(addDays(TODAY, -365)), updated_at: fmt(addDays(TODAY, -3)),
+      customer_type: "commercial", status: "active", is_demo: true,
+      created_at: fmt(addDays(TODAY, -365)), updated_at: fmt(addDays(TODAY, -3)),
     },
     {
-      id: "cust_3", owner_id: "owner", name: "Mary Johnson", address: "789 Maple Drive, Springfield",
+      id: "demo_cust_3", owner_id: "owner", name: "Mary Johnson", address: "789 Maple Drive, Springfield",
       phone: "(555) 456-7890", email: "mary.j@email.com", service_frequency: "monthly",
       service_type: ["Lawn Mowing", "Fertilizer Treatment"], next_service_date: fmt(addDays(TODAY, 12)),
       payment_status: "paid", property_size: "0.5 acre", preferred_day: "Friday",
-      customer_since: fmt(addDays(TODAY, -60)), customer_type: "residential", status: "active",
+      customer_since: fmt(addDays(TODAY, -60)), customer_type: "residential", status: "active", is_demo: true,
       created_at: fmt(addDays(TODAY, -60)), updated_at: fmt(addDays(TODAY, -5)),
-    },
-    {
-      id: "cust_4", owner_id: "owner", name: "Robert Davis", address: "321 Pine Street, Springfield",
-      phone: "(555) 321-0987", service_frequency: "one_time",
-      service_type: ["Yard Cleanup"], last_service_date: fmt(addDays(TODAY, -14)),
-      payment_status: "paid", property_size: "0.3 acre",
-      customer_since: fmt(addDays(TODAY, -30)), customer_type: "residential", status: "inactive",
-      created_at: fmt(addDays(TODAY, -30)), updated_at: fmt(addDays(TODAY, -14)),
-    },
-    {
-      id: "cust_5", owner_id: "owner", name: "Sunrise Elementary School", address: "555 School Road, Springfield",
-      phone: "(555) 222-3333", email: "facilities@sunrise.edu", service_frequency: "weekly",
-      service_type: ["Commercial Lawn Maintenance", "Leaf Removal"], next_service_date: fmt(addDays(TODAY, 2)),
-      payment_status: "past_due", property_size: "3 acres", gate_code: "9999",
-      preferred_day: "Wednesday", customer_since: fmt(addDays(TODAY, -200)),
-      customer_type: "commercial", status: "active", created_at: fmt(addDays(TODAY, -200)), updated_at: fmt(addDays(TODAY, -1)),
-    },
-    {
-      id: "cust_6", owner_id: "owner", name: "Lisa Chen", address: "42 Willow Circle, Springfield",
-      phone: "(555) 777-8888", email: "lisa.chen@email.com", service_frequency: "bi_weekly",
-      service_type: ["Lawn Mowing", "Weed Control"], last_service_date: fmt(addDays(TODAY, -5)),
-      next_service_date: fmt(addDays(TODAY, 9)), payment_status: "unpaid",
-      property_size: "0.4 acre", preferred_day: "Monday",
-      customer_since: fmt(addDays(TODAY, -90)), customer_type: "residential", status: "new",
-      created_at: fmt(addDays(TODAY, -14)), updated_at: fmt(addDays(TODAY, -2)),
     },
   ];
 
-  const services: Service[] = DEFAULT_SERVICES.map((s, i) => ({
-    id: `svc_${i + 1}`,
-    owner_id: "owner",
-    name: s.name,
-    base_price: s.base_price,
-    description: `${s.name} — professional quality service`,
-    estimated_time: s.estimated_time,
-    is_recurring: s.is_recurring,
-    is_active: true,
-    created_at: fmt(addDays(TODAY, -365)),
-    updated_at: fmt(addDays(TODAY, -1)),
-  }));
+  const services: Service[] = [
+    { id: "demo_svc_1", owner_id: "owner", name: "Lawn Mowing", base_price: 35, description: "Lawn Mowing — professional quality service", estimated_time: "45 min", is_recurring: true, is_active: true, is_demo: true, created_at: fmt(addDays(TODAY, -365)), updated_at: fmt(addDays(TODAY, -1)) },
+    { id: "demo_svc_2", owner_id: "owner", name: "Edging", base_price: 15, description: "Edging — professional quality service", estimated_time: "20 min", is_recurring: true, is_active: true, is_demo: true, created_at: fmt(addDays(TODAY, -365)), updated_at: fmt(addDays(TODAY, -1)) },
+    { id: "demo_svc_3", owner_id: "owner", name: "Weed Trimming", base_price: 20, description: "Weed Trimming — professional quality service", estimated_time: "30 min", is_recurring: true, is_active: true, is_demo: true, created_at: fmt(addDays(TODAY, -365)), updated_at: fmt(addDays(TODAY, -1)) },
+  ];
 
   const appointments: Appointment[] = [
     {
-      id: "apt_1", owner_id: "owner", customer_id: "cust_1", service_id: "svc_1",
+      id: "demo_apt_1", owner_id: "owner", customer_id: "demo_cust_1", service_id: "demo_svc_1",
       title: "Lawn Mowing — John Smith", date: fmt(TODAY), start_time: "09:00", end_time: "09:45",
       status: "scheduled", is_recurring: true, recurring_pattern: "weekly",
       created_at: fmt(addDays(TODAY, -5)), updated_at: fmt(addDays(TODAY, -1)),
     },
     {
-      id: "apt_2", owner_id: "owner", customer_id: "cust_2", service_id: "svc_14",
-      title: "Commercial Maintenance — Greenfield", date: fmt(TODAY), start_time: "10:30", end_time: "13:30",
+      id: "demo_apt_2", owner_id: "owner", customer_id: "demo_cust_2", service_id: "demo_svc_1",
+      title: "Lawn Mowing — Greenfield", date: fmt(TODAY), start_time: "10:30", end_time: "11:30",
       status: "approved", is_recurring: true, recurring_pattern: "bi_weekly",
       created_at: fmt(addDays(TODAY, -3)), updated_at: fmt(addDays(TODAY, -1)),
     },
     {
-      id: "apt_3", owner_id: "owner", customer_id: "cust_5", service_id: "svc_1",
-      title: "Lawn Mowing — Sunrise Elementary", date: fmt(addDays(TODAY, 1)), start_time: "08:00", end_time: "09:00",
-      status: "scheduled", is_recurring: true, recurring_pattern: "weekly",
-      created_at: fmt(addDays(TODAY, -7)), updated_at: fmt(addDays(TODAY, -2)),
-    },
-    {
-      id: "apt_4", owner_id: "owner", customer_id: "cust_3", service_id: "svc_6",
-      title: "Fertilizer Treatment — Mary Johnson", date: fmt(addDays(TODAY, 2)), start_time: "14:00", end_time: "14:30",
-      status: "requested", is_recurring: false,
+      id: "demo_apt_3", owner_id: "owner", customer_id: "demo_cust_3", service_id: "demo_svc_3",
+      title: "Weed Trimming — Mary Johnson", date: fmt(addDays(TODAY, 1)), start_time: "14:00", end_time: "14:30",
+      status: "scheduled", is_recurring: false,
       created_at: fmt(addDays(TODAY, -1)), updated_at: fmt(TODAY),
-    },
-    {
-      id: "apt_5", owner_id: "owner", customer_id: "cust_6", service_id: "svc_7",
-      title: "Weed Control — Lisa Chen", date: fmt(addDays(TODAY, 3)), start_time: "11:00", end_time: "11:45",
-      status: "scheduled", is_recurring: true, recurring_pattern: "bi_weekly",
-      created_at: fmt(addDays(TODAY, -2)), updated_at: fmt(addDays(TODAY, -1)),
-    },
-    {
-      id: "apt_6", owner_id: "owner", customer_id: "cust_1", service_id: "svc_2",
-      title: "Edging — John Smith", date: fmt(addDays(TODAY, 4)), start_time: "09:45", end_time: "10:05",
-      status: "scheduled", is_recurring: true, recurring_pattern: "weekly",
-      created_at: fmt(addDays(TODAY, -5)), updated_at: fmt(addDays(TODAY, -1)),
-    },
-    {
-      id: "apt_7", owner_id: "owner", customer_id: "cust_4", service_id: "svc_9",
-      title: "Yard Cleanup — Robert Davis", date: fmt(addDays(TODAY, -14)), start_time: "10:00", end_time: "11:30",
-      status: "completed", is_recurring: false,
-      created_at: fmt(addDays(TODAY, -20)), updated_at: fmt(addDays(TODAY, -14)),
-    },
-    {
-      id: "apt_8", owner_id: "owner", customer_id: "cust_2", service_id: "svc_8",
-      title: "Hedge Trimming — Greenfield", date: fmt(addDays(TODAY, 5)), start_time: "13:00", end_time: "13:45",
-      status: "requested", is_recurring: false,
-      created_at: fmt(addDays(TODAY, -1)), updated_at: fmt(TODAY),
-    },
-    {
-      id: "apt_9", owner_id: "owner", customer_id: "cust_1", service_id: "svc_1",
-      title: "Lawn Mowing — John Smith", date: fmt(addDays(TODAY, 6)), start_time: "09:00", end_time: "09:45",
-      status: "scheduled", is_recurring: true, recurring_pattern: "weekly",
-      created_at: fmt(addDays(TODAY, -5)), updated_at: fmt(addDays(TODAY, -1)),
     },
   ];
 
   const estimates: Estimate[] = [
     {
-      id: "est_1", owner_id: "owner", customer_id: "cust_3", service_id: "svc_10",
-      property_address: "789 Maple Drive, Springfield", estimated_price: 85, status: "sent",
-      notes: "Aeration + seeding combo recommended for fall", created_at: fmt(addDays(TODAY, -3)), updated_at: fmt(addDays(TODAY, -1)),
+      id: "demo_est_1", owner_id: "owner", customer_id: "demo_cust_1", service_id: "demo_svc_2",
+      property_address: "123 Oak Lane, Springfield", estimated_price: 50, status: "sent",
+      notes: "Edging and trimming — monthly service", is_demo: true, created_at: fmt(addDays(TODAY, -3)), updated_at: fmt(addDays(TODAY, -1)),
     },
     {
-      id: "est_2", owner_id: "owner", customer_id: "cust_6", service_id: "svc_12",
-      property_address: "42 Willow Circle, Springfield", estimated_price: 100, status: "accepted",
-      notes: "Pressure washing driveway and walkway", created_at: fmt(addDays(TODAY, -7)), updated_at: fmt(addDays(TODAY, -2)),
+      id: "demo_est_2", owner_id: "owner", customer_id: "demo_cust_2", service_id: "demo_svc_1",
+      property_address: "456 Commerce Blvd, Springfield", estimated_price: 150, status: "accepted",
+      notes: "Bi-weekly commercial lawn maintenance", is_demo: true, created_at: fmt(addDays(TODAY, -7)), updated_at: fmt(addDays(TODAY, -2)),
     },
     {
-      id: "est_3", owner_id: "owner", customer_id: "cust_5", service_id: "svc_13",
-      property_address: "555 School Road, Springfield", estimated_price: 180, status: "draft",
-      notes: "Seasonal cleanup — entire campus, estimate pending walk-through", created_at: fmt(addDays(TODAY, -1)), updated_at: fmt(TODAY),
+      id: "demo_est_3", owner_id: "owner", customer_id: "demo_cust_3", service_id: "demo_svc_3",
+      property_address: "789 Maple Drive, Springfield", estimated_price: 55, status: "draft",
+      notes: "Weed trimming — one-time seasonal service", is_demo: true, created_at: fmt(addDays(TODAY, -1)), updated_at: fmt(TODAY),
     },
   ];
 
   const tasks: Task[] = [
-    { id: "task_1", owner_id: "owner", customer_id: "cust_5", title: "Follow up on past-due invoice", due_date: fmt(addDays(TODAY, 1)), priority: "high", status: "not_started", created_at: fmt(addDays(TODAY, -2)), updated_at: fmt(TODAY) },
-    { id: "task_2", owner_id: "owner", customer_id: "cust_2", title: "Schedule walk-through for Greenfield", due_date: fmt(addDays(TODAY, 3)), priority: "medium", status: "in_progress", created_at: fmt(addDays(TODAY, -3)), updated_at: fmt(TODAY) },
-    { id: "task_3", owner_id: "owner", title: "Order replacement trimmer line", due_date: fmt(addDays(TODAY, 2)), priority: "medium", status: "not_started", created_at: fmt(addDays(TODAY, -1)), updated_at: fmt(TODAY) },
-    { id: "task_4", owner_id: "owner", title: "Update service area map on website", due_date: fmt(addDays(TODAY, 5)), priority: "low", status: "not_started", created_at: fmt(addDays(TODAY, -1)), updated_at: fmt(TODAY) },
-    { id: "task_5", owner_id: "owner", customer_id: "cust_3", title: "Call Mary Johnson about estimate", due_date: fmt(addDays(TODAY, 0)), priority: "high", status: "in_progress", created_at: fmt(addDays(TODAY, -1)), updated_at: fmt(TODAY) },
+    { id: "demo_task_1", owner_id: "owner", customer_id: "demo_cust_2", title: "Schedule walk-through for Greenfield", due_date: fmt(addDays(TODAY, 3)), priority: "medium", status: "in_progress", created_at: fmt(addDays(TODAY, -3)), updated_at: fmt(TODAY) },
+    { id: "demo_task_2", owner_id: "owner", title: "Order replacement trimmer line", due_date: fmt(addDays(TODAY, 2)), priority: "medium", status: "not_started", created_at: fmt(addDays(TODAY, -1)), updated_at: fmt(TODAY) },
+    { id: "demo_task_3", owner_id: "owner", customer_id: "demo_cust_3", title: "Call Mary Johnson about estimate", due_date: fmt(TODAY), priority: "high", status: "in_progress", created_at: fmt(addDays(TODAY, -1)), updated_at: fmt(TODAY) },
   ];
 
   const reminders: Reminder[] = [
-    { id: "rem_1", owner_id: "owner", customer_id: "cust_5", title: "Past-due payment follow-up", reminder_type: "payment", due_date: fmt(TODAY), is_read: false, created_at: fmt(addDays(TODAY, -2)) },
-    { id: "rem_2", owner_id: "owner", customer_id: "cust_1", appointment_id: "apt_1", title: "Lawn mowing appointment today", reminder_type: "appointment", due_date: fmt(TODAY), is_read: false, created_at: fmt(addDays(TODAY, -1)) },
-    { id: "rem_3", owner_id: "owner", customer_id: "cust_6", title: "New customer follow-up — Lisa Chen", reminder_type: "follow_up", due_date: fmt(addDays(TODAY, 1)), is_read: false, created_at: fmt(addDays(TODAY, -1)) },
-    { id: "rem_4", owner_id: "owner", title: "Sharpen mower blades", reminder_type: "equipment", due_date: fmt(addDays(TODAY, 3)), is_read: false, created_at: fmt(addDays(TODAY, -2)) },
-    { id: "rem_5", owner_id: "owner", title: "Spring fertilization schedule review", reminder_type: "seasonal", due_date: fmt(addDays(TODAY, 14)), is_read: true, created_at: fmt(addDays(TODAY, -7)) },
-    { id: "rem_6", owner_id: "owner", customer_id: "cust_3", title: "Weekly recurring — Mary Johnson", reminder_type: "recurring", due_date: fmt(addDays(TODAY, 2)), is_read: false, created_at: fmt(addDays(TODAY, -5)) },
+    { id: "demo_rem_1", owner_id: "owner", customer_id: "demo_cust_1", appointment_id: "demo_apt_1", title: "Lawn mowing appointment today", reminder_type: "appointment", due_date: fmt(TODAY), is_read: false, created_at: fmt(addDays(TODAY, -1)) },
+    { id: "demo_rem_2", owner_id: "owner", title: "Sharpen mower blades", reminder_type: "equipment", due_date: fmt(addDays(TODAY, 3)), is_read: false, created_at: fmt(addDays(TODAY, -2)) },
+    { id: "demo_rem_3", owner_id: "owner", customer_id: "demo_cust_3", title: "Weekly recurring — Mary Johnson", reminder_type: "recurring", due_date: fmt(addDays(TODAY, 2)), is_read: false, created_at: fmt(addDays(TODAY, -5)) },
   ];
 
   const payments: Payment[] = [
-    { id: "pay_1", owner_id: "owner", customer_id: "cust_1", appointment_id: "apt_1", amount: 35, payment_type: "recurring", status: "paid", description: "Lawn Mowing — weekly", paid_at: fmt(addDays(TODAY, -7)), created_at: fmt(addDays(TODAY, -7)) },
-    { id: "pay_2", owner_id: "owner", customer_id: "cust_2", appointment_id: "apt_2", amount: 150, payment_type: "recurring", status: "unpaid", description: "Commercial Maintenance — bi-weekly", created_at: fmt(addDays(TODAY, -3)) },
-    { id: "pay_3", owner_id: "owner", customer_id: "cust_4", appointment_id: "apt_7", amount: 60, payment_type: "full", status: "paid", description: "Yard Cleanup", paid_at: fmt(addDays(TODAY, -14)), created_at: fmt(addDays(TODAY, -14)) },
-    { id: "pay_4", owner_id: "owner", customer_id: "cust_5", amount: 200, payment_type: "deposit", status: "past_due", description: "Services rendered — past due", created_at: fmt(addDays(TODAY, -21)) },
-    { id: "pay_5", owner_id: "owner", customer_id: "cust_3", amount: 45, payment_type: "full", status: "paid", description: "Fertilizer Treatment", paid_at: fmt(addDays(TODAY, -10)), created_at: fmt(addDays(TODAY, -10)) },
-    { id: "pay_6", owner_id: "owner", customer_id: "cust_1", amount: 50, payment_type: "full", status: "paid", description: "Edging + Weed Trimming", paid_at: fmt(addDays(TODAY, -3)), created_at: fmt(addDays(TODAY, -3)) },
-    { id: "pay_7", owner_id: "owner", customer_id: "cust_6", amount: 40, payment_type: "recurring", status: "unpaid", description: "Weed Control — bi-weekly", created_at: fmt(addDays(TODAY, -1)) },
+    { id: "demo_pay_1", owner_id: "owner", customer_id: "demo_cust_1", appointment_id: "demo_apt_1", amount: 35, payment_type: "recurring", status: "paid", description: "Lawn Mowing — weekly", paid_at: fmt(addDays(TODAY, -7)), created_at: fmt(addDays(TODAY, -7)) },
+    { id: "demo_pay_2", owner_id: "owner", customer_id: "demo_cust_2", appointment_id: "demo_apt_2", amount: 150, payment_type: "recurring", status: "unpaid", description: "Commercial Maintenance — bi-weekly", created_at: fmt(addDays(TODAY, -3)) },
+    { id: "demo_pay_3", owner_id: "owner", customer_id: "demo_cust_3", amount: 55, payment_type: "full", status: "paid", description: "Weed Trimming", paid_at: fmt(addDays(TODAY, -10)), created_at: fmt(addDays(TODAY, -10)) },
   ];
 
   return { customers, services, appointments, estimates, tasks, reminders, payments };
@@ -292,6 +216,30 @@ export function ensureSeeded(): void {
     localStorage.setItem(STORAGE_KEYS.payments, JSON.stringify(data.payments));
     localStorage.setItem(STORAGE_KEYS.seeded, "true");
   }
+}
+
+// --- Clear Demo Data ---
+export function clearDemoData(): { customers: number; services: number; estimates: number; appointments: number; tasks: number; reminders: number; payments: number } {
+  if (typeof window === "undefined") return { customers: 0, services: 0, estimates: 0, appointments: 0, tasks: 0, reminders: 0, payments: 0 };
+
+  const clearList = <T extends { is_demo?: boolean }>(key: string): number => {
+    const items: T[] = JSON.parse(localStorage.getItem(key) || "[]");
+    const kept = items.filter(i => !i.is_demo);
+    localStorage.setItem(key, JSON.stringify(kept));
+    return items.length - kept.length;
+  };
+
+  const count = {
+    customers: clearList<Customer>(STORAGE_KEYS.customers),
+    services: clearList<Service>(STORAGE_KEYS.services),
+    estimates: clearList<Estimate>(STORAGE_KEYS.estimates),
+    appointments: clearList<Appointment>(STORAGE_KEYS.appointments),
+    tasks: clearList<Task>(STORAGE_KEYS.tasks),
+    reminders: clearList<Reminder>(STORAGE_KEYS.reminders),
+    payments: clearList<Payment>(STORAGE_KEYS.payments),
+  };
+
+  return count;
 }
 
 // --- Generic helpers ---

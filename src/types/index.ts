@@ -32,6 +32,7 @@ export interface Customer {
   customer_since: string;
   customer_type: CustomerType;
   status: CustomerStatus;
+  is_demo?: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -45,6 +46,7 @@ export interface Service {
   estimated_time?: string;
   is_recurring: boolean;
   is_active: boolean;
+  is_demo?: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -62,6 +64,7 @@ export interface Appointment {
   notes?: string;
   is_recurring: boolean;
   recurring_pattern?: string;
+  is_demo?: boolean;
   created_at: string;
   updated_at: string;
   // Joined
@@ -79,6 +82,7 @@ export interface Estimate {
   notes?: string;
   photos?: string[];
   status: EstimateStatus;
+  is_demo?: boolean;
   created_at: string;
   updated_at: string;
   customer?: Customer;
@@ -93,6 +97,7 @@ export interface Task {
   due_date?: string;
   priority: TaskPriority;
   status: TaskStatus;
+  is_demo?: boolean;
   created_at: string;
   updated_at: string;
   customer?: Customer;
@@ -107,6 +112,7 @@ export interface Reminder {
   reminder_type: ReminderType;
   due_date?: string;
   is_read: boolean;
+  is_demo?: boolean;
   created_at: string;
   customer?: Customer;
 }
@@ -122,6 +128,7 @@ export interface Payment {
   status: PaymentStatus;
   description?: string;
   paid_at?: string;
+  is_demo?: boolean;
   created_at: string;
   customer?: Customer;
 }

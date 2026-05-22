@@ -2,9 +2,10 @@
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { LogOut, QrCode } from "lucide-react";
+import { LogOut, QrCode, Crown } from "lucide-react";
 import { NAV_ITEMS } from "@/lib/constants";
 import { useAuth } from "@/lib/storage";
+import { usePlan } from "@/components/PlanProvider";
 import { ReactNode } from "react";
 
 function getInitials(name: string): string {
@@ -14,6 +15,7 @@ function getInitials(name: string): string {
 export default function Shell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const { logout, owner } = useAuth();
+  const { tier, showUpgrade } = usePlan();
 
   const displayName = owner?.businessName || "Business Owner";
   const initials = owner?.businessName ? getInitials(owner.businessName) : "🌿";
@@ -30,7 +32,17 @@ export default function Shell({ children }: { children: ReactNode }) {
             </div>
             <div className="flex-1 min-w-0">
               <h2 className="text-sm font-bold truncate">{displayName}</h2>
-              <p className="text-xs text-gray-400">LCM Pro Admin</p>
+              {tier === "free" ? (
+                <button
+                  onClick={() => showUpgrade("general")}
+                  className="flex items-center gap-1 text-xs text-amber-400 hover:text-amber-300 transition-colors"
+                >
+                  <Crown className="w-3 h-3" />
+                  Free Plan — Upgrade
+                </button>
+              ) : (
+                <p className="text-xs text-gray-400">LCM Pro</p>
+              )}
             </div>
           </div>
         </div>
@@ -97,6 +109,15 @@ export default function Shell({ children }: { children: ReactNode }) {
           </div>
           <div className="flex-1 min-w-0">
             <h1 className="text-sm font-extrabold truncate">{displayName}</h1>
+            {tier === "free" && (
+              <button
+                onClick={() => showUpgrade("general")}
+                className="flex items-center gap-1 text-[10px] text-amber-400 hover:text-amber-300 transition-colors"
+              >
+                <Crown className="w-3 h-3" />
+                Free Plan
+              </button>
+            )}
           </div>
           <Link
             href="/flyer/"

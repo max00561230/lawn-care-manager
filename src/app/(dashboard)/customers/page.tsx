@@ -6,9 +6,12 @@ import { CUSTOMER_FILTERS, SERVICE_FREQUENCIES, DAYS_OF_WEEK } from "@/lib/const
 import { Customer, CustomerFormData, CustomerType, ServiceFrequency } from "@/types";
 import { Search, Plus, X, Edit, Trash2, ChevronDown, Mail, Phone, MapPin } from "lucide-react";
 import Link from "next/link";
+import { usePlan } from "@/components/PlanProvider";
+import { PLAN_LIMITS } from "@/lib/plan-limits";
 
 export default function CustomersPage() {
   const { customers, addCustomer, updateCustomer, deleteCustomer } = useCustomers();
+  const { tier, showUpgrade } = usePlan();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
   const [showAddModal, setShowAddModal] = useState(false);
@@ -45,7 +48,14 @@ export default function CustomersPage() {
     });
   };
 
-  const openAddModal = () => { resetForm(); setEditingCustomer(null); setShowAddModal(true); };
+  const openAddModal = () => {
+    const customerLimit = PLAN_LIMITS.free.customers;
+    if (tier === "free" && customerLimit !== null && customers.length >= (customerLimit as number)) {
+      showUpgrade("customers");
+      return;
+    }
+    resetForm(); setEditingCustomer(null); setShowAddModal(true);
+  };
 
   const openEditModal = (c: Customer) => {
     setFormData({

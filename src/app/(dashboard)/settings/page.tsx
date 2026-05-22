@@ -1,16 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { useSettings, useAuth, exportAllData, importAllData, resetAllData } from "@/lib/storage";
+import { useSettings, useAuth, exportAllData, importAllData, resetAllData, clearDemoData } from "@/lib/storage";
 import EmailSettingsSection from "@/components/EmailSettings";
+import { usePlan } from "@/components/PlanProvider";
+import { Trash2 } from "lucide-react";
 
 export default function SettingsPage() {
   const { settings, updateSettings } = useSettings();
   const { owner, updatePin, updateBusinessName } = useAuth();
+  const { tier } = usePlan();
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [importText, setImportText] = useState("");
   const [newPin, setNewPin] = useState("");
   const [pinSaved, setPinSaved] = useState(false);
+  const [demoCleared, setDemoCleared] = useState(false);
 
   const handleExport = () => {
     const data = exportAllData();
@@ -176,6 +180,24 @@ export default function SettingsPage() {
               Import Data
             </button>
           </div>
+          {tier === "free" && (
+            <div className="border-t border-gray-100 pt-4">
+              <h3 className="text-sm font-medium text-amber-700 mb-2 flex items-center gap-1.5">
+                <Trash2 className="w-4 h-4" /> Clear Demo Data
+              </h3>
+              <p className="text-xs text-gray-500 mb-2">Remove the pre-loaded demo items to make room for your own data. Free Plan limits: 3 customers, 3 services, 3 estimates.</p>
+              {demoCleared ? (
+                <p className="text-sm text-green-600 font-medium">✓ Demo data cleared! Add your own customers, services, and estimates.</p>
+              ) : (
+                <button
+                  onClick={() => { clearDemoData(); setDemoCleared(true); setTimeout(() => window.location.reload(), 500); }}
+                  className="bg-amber-500 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-amber-600 transition-colors"
+                >
+                  Clear Demo Data
+                </button>
+              )}
+            </div>
+          )}
           <div className="border-t border-gray-100 pt-4">
             <h3 className="text-sm font-medium text-red-700 mb-2">Reset Data</h3>
             <p className="text-xs text-gray-500 mb-2">Delete all data and reload with sample data.</p>
