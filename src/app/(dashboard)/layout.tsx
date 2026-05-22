@@ -5,18 +5,25 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth, ensureSeeded } from "@/lib/storage";
 
+const BYPASS_AUTH = true; // Set to true to bypass PIN login
+
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { isLoggedIn, isSetupComplete } = useAuth();
 
   useEffect(() => {
     ensureSeeded();
+    if (BYPASS_AUTH) return; // Skip auth redirect when bypassed
     if (!isSetupComplete) {
       router.replace("/setup/");
     } else if (!isLoggedIn) {
       router.replace("/login/");
     }
   }, [isLoggedIn, isSetupComplete, router]);
+
+  if (BYPASS_AUTH) {
+    return <Shell>{children}</Shell>;
+  }
 
   if (!isLoggedIn || !isSetupComplete) {
     return (

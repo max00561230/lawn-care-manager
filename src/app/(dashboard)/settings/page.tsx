@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useSettings, useAuth, exportAllData, importAllData, resetAllData } from "@/lib/storage";
+import EmailSettingsSection from "@/components/EmailSettings";
 
 export default function SettingsPage() {
   const { settings, updateSettings } = useSettings();
@@ -109,6 +110,9 @@ export default function SettingsPage() {
           </div>
         </div>
       </div>
+
+      {/* Email Settings */}
+      <EmailSettingsSection />
 
       {/* Working Hours */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">

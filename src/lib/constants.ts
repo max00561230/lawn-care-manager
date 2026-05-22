@@ -74,6 +74,7 @@ export const NAV_ITEMS = [
   { href: '/bills', label: 'Bills', icon: '🧾' },
   { href: '/reports', label: 'Reports', icon: '📈' },
   { href: '/settings', label: 'Settings', icon: '⚙️' },
+  { href: '/guide', label: 'Guide', icon: '📖' },
 ] as const;
 
 export const CUSTOMER_NAV_ITEMS = [

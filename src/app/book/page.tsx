@@ -8,8 +8,9 @@ export default function BookPage() {
   const { services } = useServices();
   const { owner } = useAuth();
   const activeServices = services.filter((s) => s.is_active);
+  const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const [formData, setFormData] = useState({
-    service_id: "", name: "", address: "", phone: "", email: "", preferred_date: "", preferred_time: "", notes: "",
+    name: "", address: "", phone: "", email: "", preferred_date: "", preferred_time: "", notes: "",
   });
   const [submitted, setSubmitted] = useState(false);
 
@@ -17,15 +18,32 @@ export default function BookPage() {
   const businessPhone = "";
   const businessAddress = "";
 
+  const toggleService = (id: string) => {
+    setSelectedServices((prev) =>
+      prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]
+    );
+  };
+
+  const totalPrice = selectedServices.reduce((sum, id) => {
+    const svc = activeServices.find((s) => s.id === id);
+    return sum + (svc?.base_price || 0);
+  }, 0);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name.trim() || !formData.service_id) return;
+    if (!formData.name.trim() || selectedServices.length === 0) return;
+
     const bookings = JSON.parse(localStorage.getItem("lcm_bookings") || "[]");
-    const selectedService = activeServices.find((s) => s.id === formData.service_id);
+    const serviceNames = selectedServices
+      .map((id) => activeServices.find((s) => s.id === id)?.name)
+      .filter(Boolean)
+      .join(", ");
+
     bookings.push({
       id: Date.now().toString(36),
       ...formData,
-      service_name: selectedService?.name || "",
+      service_ids: selectedServices,
+      service_name: serviceNames,
       created_at: new Date().toISOString(),
     });
     localStorage.setItem("lcm_bookings", JSON.stringify(bookings));
@@ -33,6 +51,10 @@ export default function BookPage() {
   };
 
   if (submitted) {
+    const selectedNames = selectedServices
+      .map((id) => activeServices.find((s) => s.id === id)?.name)
+      .filter(Boolean);
+
     return (
       <div className="min-h-screen flex items-center justify-center p-4" style={{ background: "linear-gradient(180deg, #f0fdf4 0%, #f8fafc 38%, #eff6ff 100%)" }}>
         <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-8 text-center">
@@ -41,13 +63,23 @@ export default function BookPage() {
           </div>
           <h2 className="text-xl font-bold text-gray-900 mb-2">Request Submitted!</h2>
           <p className="text-gray-600 mb-6">Thank you, {formData.name}. We&apos;ve received your service request. We&apos;ll contact you shortly to confirm the details.</p>
-          <div className="bg-green-50 rounded-xl p-4 mb-6 text-left text-sm">
-            <p><span className="text-gray-500">Service:</span> <span className="font-semibold text-gray-900">{activeServices.find((s) => s.id === formData.service_id)?.name}</span></p>
+          <div className="bg-green-50 rounded-xl p-4 mb-6 text-left text-sm space-y-2">
+            <p><span className="text-gray-500">Service(s):</span> <span className="font-semibold text-gray-900">{selectedNames.join(", ")}</span></p>
             <p><span className="text-gray-500">Preferred Date:</span> <span className="font-semibold text-gray-900">{formData.preferred_date || "Not specified"}</span></p>
             <p><span className="text-gray-500">Preferred Time:</span> <span className="font-semibold text-gray-900">{formData.preferred_time || "Not specified"}</span></p>
+            {totalPrice > 0 && (
+              <p><span className="text-gray-500">Estimated Total:</span> <span className="font-bold text-green-700">${totalPrice}</span></p>
+            )}
           </div>
           <div className="flex gap-3 justify-center">
-            <button onClick={() => { setSubmitted(false); setFormData({ service_id: "", name: "", address: "", phone: "", email: "", preferred_date: "", preferred_time: "", notes: "" }); }} className="btn-primary text-sm">
+            <button
+              onClick={() => {
+                setSubmitted(false);
+                setSelectedServices([]);
+                setFormData({ name: "", address: "", phone: "", email: "", preferred_date: "", preferred_time: "", notes: "" });
+              }}
+              className="btn-primary text-sm"
+            >
               Book Another
             </button>
             <a href="/" className="bg-gray-100 text-gray-700 px-6 py-2.5 rounded-xl font-medium hover:bg-gray-200 transition-colors text-sm">
@@ -61,7 +93,7 @@ export default function BookPage() {
 
   return (
     <div className="min-h-screen" style={{ background: "linear-gradient(180deg, #f0fdf4 0%, #f8fafc 38%, #eff6ff 100%)" }}>
-      {/* Sticky header with backdrop blur */}
+      {/* Sticky header */}
       <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-200/50">
         <div className="max-w-2xl mx-auto flex items-center gap-3 px-4 py-3">
           <div className="w-10 h-10 rounded-xl bg-green-700 flex items-center justify-center text-white text-lg font-bold flex-shrink-0">
@@ -91,20 +123,19 @@ export default function BookPage() {
 
       <div className="max-w-2xl mx-auto px-4 py-6">
         <div className="lg:flex lg:gap-6">
-          {/* Service selection + form — main column */}
           <div className="flex-1 space-y-6">
-            {/* Service cards grid */}
+            {/* Service selection */}
             <div>
               <h2 className="text-xl font-bold text-gray-900 mb-1">Request a Service</h2>
-              <p className="text-sm text-gray-500 mb-4">Choose a service and fill out the form. We&apos;ll confirm your appointment.</p>
+              <p className="text-sm text-gray-500 mb-4">Select one or more services and fill out the form. We&apos;ll confirm your appointment.</p>
 
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {activeServices.map((s) => {
-                  const selected = formData.service_id === s.id;
+                  const selected = selectedServices.includes(s.id);
                   return (
                     <button
                       key={s.id}
-                      onClick={() => setFormData({ ...formData, service_id: s.id })}
+                      onClick={() => toggleService(s.id)}
                       className={`text-left p-4 rounded-2xl border-2 transition-all duration-200 ${
                         selected
                           ? "border-orange-500 bg-orange-50 shadow-md shadow-orange-500/10"
@@ -125,10 +156,36 @@ export default function BookPage() {
                   );
                 })}
               </div>
+
+              {/* Selected services summary */}
+              {selectedServices.length > 0 && (
+                <div className="mt-4 bg-green-50 border border-green-200 rounded-xl p-4">
+                  <h3 className="font-semibold text-green-900 text-sm mb-2">
+                    Selected ({selectedServices.length} service{selectedServices.length > 1 ? "s" : ""})
+                  </h3>
+                  <div className="space-y-1.5">
+                    {selectedServices.map((id) => {
+                      const svc = activeServices.find((s) => s.id === id);
+                      return svc ? (
+                        <div key={id} className="flex items-center justify-between text-sm">
+                          <span className="text-gray-700">{svc.name}</span>
+                          <span className="font-semibold text-gray-900">${svc.base_price}</span>
+                        </div>
+                      ) : null;
+                    })}
+                    {selectedServices.length > 1 && (
+                      <div className="border-t border-green-200 pt-1.5 mt-1.5 flex items-center justify-between text-sm font-bold">
+                        <span className="text-green-900">Estimated Total</span>
+                        <span className="text-green-700">${totalPrice}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Booking form */}
-            {formData.service_id && (
+            {selectedServices.length > 0 && (
               <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
                 <h3 className="font-semibold text-gray-900 mb-4">Your Details</h3>
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -162,7 +219,7 @@ export default function BookPage() {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1.5">Additional Notes</label>
-                    <textarea value={formData.notes} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} rows={3} className="input-field" placeholder="Any special instructions..." />
+                    <textarea value={formData.notes} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} rows={3} className="input-field" placeholder="Any special instructions, yard size, gate code, etc..." />
                   </div>
                   <button type="submit" className="w-full btn-accent text-lg py-3.5">
                     Submit Request

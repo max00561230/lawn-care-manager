@@ -65,10 +65,15 @@ export default function DashboardPage() {
             {new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" })}
           </p>
         </div>
-        <Link href="/book/" className="btn-accent text-sm flex items-center gap-2">
-          <TrendingUp className="w-4 h-4" />
-          Book Page
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link href="/book/" className="btn-accent text-sm flex items-center gap-2">
+            <TrendingUp className="w-4 h-4" />
+            Book Page
+          </Link>
+          <Link href="/book-flyer/" className="bg-white border border-green-300 text-green-700 px-3 py-2 rounded-xl text-sm font-semibold hover:bg-green-50 transition-colors flex items-center gap-1">
+            📱 QR Flyer
+          </Link>
+        </div>
       </div>
 
       {/* Stats cards — vibrant gradient backgrounds */}
