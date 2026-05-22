@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useCallback, useEffect } from "react";
 import { PlanTier, PLAN_LIMITS, STORAGE_KEY_PLAN, wouldExceedLimit, getRemaining } from "@/lib/plan-limits";
+import { activateLicenseKey, verifyLicense } from "@/lib/license-api";
 
 interface PlanContextType {
   tier: PlanTier;
@@ -15,7 +16,7 @@ interface PlanContextType {
   hideUpgrade: () => void;
   upgradeVisible: boolean;
   upgradeResource: string | null;
-  activateFullPlan: (licenseKey: string) => boolean;
+  activateFullPlan: (licenseKey: string) => Promise<{ ok: boolean; message?: string; revoked?: boolean }>;
 }
 
 const PlanContext = createContext<PlanContextType | null>(null);
@@ -25,13 +26,26 @@ export function PlanProvider({ children }: { children: React.ReactNode }) {
   const [upgradeVisible, setUpgradeVisible] = useState(false);
   const [upgradeResource, setUpgradeResource] = useState<string | null>(null);
 
-  // Load plan from localStorage on mount
+  // Load plan from localStorage on mount + verify license with server
   useEffect(() => {
     if (typeof window === "undefined") return;
     const stored = localStorage.getItem(STORAGE_KEY_PLAN);
     if (stored === "free" || stored === "full") {
       setTierState(stored);
     }
+
+    // If user has a stored license, verify it's still valid on mount
+    const storedLicense = localStorage.getItem("lcm_license");
+    if (storedLicense && stored === "full") {
+      verifyLicense().then((result) => {
+        if (!result.ok) {
+          // License revoked or device no longer authorized — downgrade
+          setTier("free");
+          localStorage.removeItem("lcm_license");
+        }
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const setTier = useCallback((newTier: PlanTier) => {
@@ -73,16 +87,21 @@ export function PlanProvider({ children }: { children: React.ReactNode }) {
     setUpgradeResource(null);
   }, []);
 
-  // Activate full plan with a license key
+  // Activate full plan via real JRT license API
   const activateFullPlan = useCallback(
-    (licenseKey: string): boolean => {
-      // JRT license validation — for now, accept any key starting with JRT-
-      // Full integration with jrt-license-system will be wired later
-      if (licenseKey && licenseKey.startsWith("JRT-")) {
-        setTier("full");
-        return true;
+    async (licenseKey: string): Promise<{ ok: boolean; message?: string; revoked?: boolean }> => {
+      try {
+        const result = await activateLicenseKey(licenseKey);
+
+        if (result.ok) {
+          setTier("full");
+          return { ok: true };
+        }
+
+        return { ok: false, message: result.message, revoked: result.revoked };
+      } catch {
+        return { ok: false, message: "Unable to activate license. Please try again." };
       }
-      return false;
     },
     [setTier]
   );
