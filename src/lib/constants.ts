@@ -66,6 +66,7 @@ export const NAV_ITEMS = [
   { href: '/calendar', label: 'Calendar', icon: '📅' },
   { href: '/customers', label: 'Customers', icon: '👥' },
   { href: '/appointments', label: 'Appointments', icon: '🕐' },
+  { href: '/booking-requests', label: 'Bookings', icon: '📋' },
   { href: '/services', label: 'Services', icon: '✂️' },
   { href: '/estimates', label: 'Estimates', icon: '📝' },
   { href: '/tasks', label: 'Tasks', icon: '✅' },

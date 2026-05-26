@@ -11,6 +11,7 @@ export type EstimateStatus = 'draft' | 'sent' | 'accepted' | 'declined';
 export type ReminderType = 'appointment' | 'payment' | 'follow_up' | 'equipment' | 'recurring' | 'seasonal';
 export type PaymentType = 'full' | 'deposit' | 'recurring';
 export type BillStatus = 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled';
+export type BookingRequestStatus = 'pending' | 'approved' | 'suggested' | 'declined' | 'converted';
 
 export interface Customer {
   id: string;
@@ -131,6 +132,26 @@ export interface Payment {
   is_demo?: boolean;
   created_at: string;
   customer?: Customer;
+}
+
+export interface BookingRequest {
+  id: string;
+  owner_id: string;
+  name: string;
+  address?: string;
+  phone?: string;
+  email?: string;
+  service_ids: string[];
+  service_name: string;
+  preferred_date?: string;
+  preferred_time?: string;
+  notes?: string;
+  status: BookingRequestStatus;
+  response_note?: string;
+  converted_customer_id?: string;
+  converted_appointment_id?: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface BillItem {

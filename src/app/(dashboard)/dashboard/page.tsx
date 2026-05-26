@@ -1,13 +1,10 @@
 "use client";
 
-import { useCustomers, useAppointments, usePayments, useTasks, useReminders, ensureSeeded } from "@/lib/storage";
+import { useEffect, useState } from "react";
+import { useCustomers, useAppointments, usePayments, useTasks, useReminders, useBookingRequests, useSettings, ensureSeeded } from "@/lib/storage";
 import { APPOINTMENT_STATUSES } from "@/lib/constants";
+import { ArrowRight, TrendingUp } from "lucide-react";
 import Link from "next/link";
-import {
-  Users, Briefcase, DollarSign, AlertCircle,
-  ArrowRight, TrendingUp,
-} from "lucide-react";
-import { useEffect } from "react";
 
 export default function DashboardPage() {
   const { customers } = useCustomers();
@@ -15,6 +12,18 @@ export default function DashboardPage() {
   const { payments } = usePayments();
   const { tasks } = useTasks();
   const { reminders } = useReminders();
+  const { bookingRequests } = useBookingRequests();
+  const { settings } = useSettings();
+  const bookingUrl = settings.base_url ? `${settings.base_url.replace(/\/+$/, "")}/book/${settings.booking_slug}` : "";
+  const [copied, setCopied] = useState(false);
+
+  const copyBookingLink = () => {
+    if (bookingUrl) {
+      navigator.clipboard?.writeText(bookingUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
   useEffect(() => { ensureSeeded(); }, []);
 
@@ -45,13 +54,14 @@ export default function DashboardPage() {
     return found || { label: status, color: "#94a3b8" };
   };
 
-  /* Vibrant gradient stat cards — matching FV's lively visual punch */
   const stats = [
-    { label: "Total Customers", value: customers.length, icon: Users, emoji: "👥", gradient: "from-green-500 to-emerald-600", bgLight: "bg-green-50", borderAccent: "border-green-500" },
-    { label: "Active Jobs", value: activeJobs, icon: Briefcase, emoji: "🔧", gradient: "from-blue-500 to-indigo-600", bgLight: "bg-blue-50", borderAccent: "border-blue-500" },
-    { label: "Revenue This Month", value: `$${revenueThisMonth.toLocaleString()}`, icon: DollarSign, emoji: "💰", gradient: "from-orange-500 to-amber-500", bgLight: "bg-orange-50", borderAccent: "border-orange-500" },
-    { label: "Unpaid Invoices", value: `$${unpaidInvoices.toLocaleString()}`, icon: AlertCircle, emoji: "⚠️", gradient: "from-red-500 to-rose-600", bgLight: "bg-red-50", borderAccent: "border-red-500" },
+    { label: "Total Customers", value: customers.length, emoji: "\u00a0\u00a0\u00a0\u00a0", gradient: "from-green-500 to-emerald-600", borderAccent: "border-green-500" },
+    { label: "Active Jobs", value: activeJobs, emoji: "\u00a0\u00a0\u00a0\u00a0", gradient: "from-blue-500 to-indigo-600", borderAccent: "border-blue-500" },
+    { label: "Revenue This Month", value: `$${revenueThisMonth.toLocaleString()}`, emoji: "\u00a0\u00a0\u00a0\u00a0", gradient: "from-orange-500 to-amber-500", borderAccent: "border-orange-500" },
+    { label: "Unpaid Invoices", value: `$${unpaidInvoices.toLocaleString()}`, emoji: "\u00a0\u00a0\u00a0\u00a0", gradient: "from-red-500 to-rose-600", borderAccent: "border-red-500" },
+    { label: "Booking Requests", value: bookingRequests.filter((r) => r.status === "pending").length, emoji: "\u00a0\u00a0\u00a0\u00a0", gradient: "from-purple-500 to-violet-600", borderAccent: "border-purple-500" },
   ];
+
 
   return (
     <div className="space-y-6">
@@ -76,7 +86,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Stats cards — vibrant gradient backgrounds */}
+      {/* Stats cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat) => (
           <div key={stat.label} className={`bg-white rounded-2xl shadow hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5 border-l-4 ${stat.borderAccent}`}>
@@ -94,7 +104,7 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid lg:grid-cols-3 gap-6">
-        {/* Today's Schedule */}
+        {/* Today&apos;s Schedule */}
         <div className="lg:col-span-2 bg-white rounded-2xl shadow hover:shadow-lg transition-shadow duration-200">
           <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
             <h2 className="font-bold text-gray-900 flex items-center gap-2">
@@ -178,6 +188,70 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+
+      {/* Recent Booking Requests */}
+      {bookingRequests.length > 0 && (
+        <div className="bg-white rounded-2xl shadow hover:shadow-lg transition-shadow duration-200">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+            <h2 className="font-bold text-gray-900 flex items-center gap-2">
+              📬 Recent Booking Requests
+            </h2>
+            <Link href="/booking-requests/" className="text-sm text-orange-600 hover:text-orange-700 font-semibold flex items-center gap-1">
+              Open Inbox <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+          <div className="divide-y divide-gray-50">
+            {bookingRequests.slice(0, 4).map((r) => (
+              <div key={r.id} className="px-6 py-3 flex items-center gap-3">
+                <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+                  r.status === "pending" ? "bg-yellow-100 text-yellow-800" :
+                  r.status === "approved" ? "bg-green-100 text-green-800" :
+                  r.status === "converted" ? "bg-purple-100 text-purple-800" :
+                  r.status === "declined" ? "bg-red-100 text-red-800" :
+                  "bg-blue-100 text-blue-800"
+                }`}>
+                  {r.status.charAt(0).toUpperCase() + r.status.slice(1)}
+                </span>
+                <span className="flex-1 text-sm text-gray-700 truncate">{r.name} — {r.service_name}</span>
+                <span className="text-xs text-gray-400">{r.preferred_date || r.created_at}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Booking link copy card */}
+      {bookingUrl && (
+        <div className="bg-gradient-to-r from-green-700 to-emerald-600 text-white rounded-2xl shadow hover:shadow-lg transition-shadow duration-200 p-6">
+          <h2 className="font-bold text-lg mb-2">📲 Your Booking Link</h2>
+          <p className="text-green-100 text-sm mb-3">Share this link or print the QR flyer for customers to request appointments.</p>
+          <div className="bg-white/10 rounded-xl p-3 font-mono text-sm break-all mb-3">
+            {bookingUrl}
+          </div>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={copyBookingLink}
+              className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-xl text-sm font-semibold transition-colors"
+            >
+              {copied ? "✓ Copied!" : "📋 Copy Link"}
+            </button>
+            <Link href="/book-flyer/" className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-xl text-sm font-semibold transition-colors">
+              📱 QR Flyer
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {/* No booking URL set — prompt */}
+      {!bookingUrl && (
+        <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-6">
+          <h2 className="font-bold text-yellow-900 mb-2">⚠️ Set Up Your Booking Link</h2>
+          <p className="text-yellow-800 text-sm mb-3">Configure your Base URL and Booking Slug in Settings to generate a shareable booking link and QR code.</p>
+          <Link href="/settings/" className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-xl text-sm font-semibold transition-colors inline-block">
+            ⚙️ Go to Settings
+          </Link>
+        </div>
+      )}
 
       {/* Upcoming 7 days */}
       {next7.length > 0 && (

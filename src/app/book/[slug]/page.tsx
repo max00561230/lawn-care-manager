@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useServices, useAuth, useSettings, useBookingRequests } from "@/lib/storage";
 import { Clock, Phone, MapPin, Check } from "lucide-react";
 
-export default function BookPage() {
+export default function BookSlugPage() {
   const { services } = useServices();
   const { owner } = useAuth();
   const { settings } = useSettings();
@@ -16,7 +16,7 @@ export default function BookPage() {
   });
   const [submitted, setSubmitted] = useState(false);
 
-  const businessName = owner?.businessName || "JRT Lawn Care";
+  const businessName = owner?.businessName || settings.company_name || "JRT Lawn Care";
   const businessPhone = settings.phone;
   const businessAddress = settings.service_area || settings.address;
 
@@ -70,7 +70,7 @@ export default function BookPage() {
             )}
           </div>
           <p className="text-xs text-gray-500 mb-6">
-            This request is now in the owner booking inbox for approval, a suggested time, decline, or conversion to a scheduled appointment.
+            {settings.payment_terms || "Payment is due after service unless a recurring plan is approved."}
           </p>
           <div className="flex gap-3 justify-center">
             <button
@@ -83,9 +83,6 @@ export default function BookPage() {
             >
               Book Another
             </button>
-            <a href="/" className="bg-gray-100 text-gray-700 px-6 py-2.5 rounded-xl font-medium hover:bg-gray-200 transition-colors text-sm">
-              Home
-            </a>
           </div>
         </div>
       </div>
@@ -236,7 +233,7 @@ export default function BookPage() {
       <footer className="border-t border-gray-200/50 mt-12">
         <div className="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between text-xs text-gray-400">
           <span>Powered by Jade Rose Technology</span>
-          <span>JRT LawnCare Manager Pro</span>
+          <span>LawnCare Manager Pro</span>
         </div>
       </footer>
     </div>

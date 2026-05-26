@@ -11,6 +11,8 @@ import {
   Reminder,
   Payment,
   Bill,
+  BookingRequest,
+  BookingRequestStatus,
   CustomerFormData,
   AppointmentFormData,
   ServiceFormData,
@@ -37,6 +39,7 @@ const STORAGE_KEYS = {
   reminders: "lcm_reminders",
   payments: "lcm_payments",
   bills: "lcm_bills",
+  bookingRequests: "lcm_booking_requests",
   settings: "lcm_settings",
   seeded: "lcm_seeded_v2",
   auth: "lcm_auth",
@@ -543,6 +546,59 @@ export function usePayments() {
   return { payments: enriched, addPayment, updatePayment, deletePayment };
 }
 
+// --- BOOKING REQUESTS ---
+export function useBookingRequests() {
+  const [bookingRequests, setBookingRequests] = useLocalStorage<BookingRequest[]>(STORAGE_KEYS.bookingRequests, []);
+
+  const addBookingRequest = useCallback((data: {
+    name: string;
+    address?: string;
+    phone?: string;
+    email?: string;
+    service_ids: string[];
+    service_name: string;
+    preferred_date?: string;
+    preferred_time?: string;
+    notes?: string;
+  }): BookingRequest => {
+    const today = new Date().toISOString().split("T")[0];
+    const request: BookingRequest = {
+      id: generateId(),
+      owner_id: "owner",
+      name: data.name,
+      address: data.address,
+      phone: data.phone,
+      email: data.email,
+      service_ids: data.service_ids,
+      service_name: data.service_name,
+      preferred_date: data.preferred_date,
+      preferred_time: data.preferred_time,
+      notes: data.notes,
+      status: "pending",
+      created_at: today,
+      updated_at: today,
+    };
+    setBookingRequests((prev) => [request, ...prev]);
+    return request;
+  }, [setBookingRequests]);
+
+  const updateBookingRequest = useCallback((id: string, data: Partial<BookingRequest> & { status?: BookingRequestStatus }): void => {
+    setBookingRequests((prev) =>
+      prev.map((request) =>
+        request.id === id
+          ? { ...request, ...data, updated_at: new Date().toISOString().split("T")[0] }
+          : request
+      )
+    );
+  }, [setBookingRequests]);
+
+  const deleteBookingRequest = useCallback((id: string): void => {
+    setBookingRequests((prev) => prev.filter((request) => request.id !== id));
+  }, [setBookingRequests]);
+
+  return { bookingRequests, addBookingRequest, updateBookingRequest, deleteBookingRequest };
+}
+
 // --- BILLS ---
 function generateBillNumber(): string {
   const now = new Date();
@@ -615,6 +671,11 @@ export interface AppSettings {
   phone: string;
   email: string;
   address: string;
+  booking_slug: string;
+  base_url: string;
+  payment_terms: string;
+  cancellation_policy: string;
+  launch_status: string;
   working_hours_start: string;
   working_hours_end: string;
   service_area: string;
@@ -628,6 +689,11 @@ const DEFAULT_SETTINGS: AppSettings = {
   phone: "(555) 000-0000",
   email: "info@jrtlawn.com",
   address: "Springfield, IL",
+  booking_slug: "jrt-lawn-care",
+  base_url: "",
+  payment_terms: "Payment is due after service unless a recurring plan is approved.",
+  cancellation_policy: "Please request schedule changes at least 24 hours before service.",
+  launch_status: "Vendor customization pending",
   working_hours_start: "08:00",
   working_hours_end: "18:00",
   service_area: "Springfield and surrounding 20 miles",

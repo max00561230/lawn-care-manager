@@ -2,20 +2,28 @@
 
 import { useEffect, useState, useRef } from "react";
 import QRCode from "qrcode";
-import { useServices, useAuth } from "@/lib/storage";
+import { useServices, useAuth, useSettings } from "@/lib/storage";
 import { Printer, X } from "lucide-react";
 import Link from "next/link";
 
 export default function BookFlyerPage() {
   const { owner } = useAuth();
   const { services } = useServices();
+  const { settings } = useSettings();
   const [qrDataUrl, setQrDataUrl] = useState("");
   const printRef = useRef<HTMLDivElement>(null);
 
   const businessName = owner?.businessName || "JRT Lawn Care";
-  const businessPhone = "";
+  const businessPhone = settings.phone;
+  const serviceArea = settings.service_area || settings.address;
   const activeServices = services.filter((s) => s.is_active);
-  const bookUrl = typeof window !== "undefined" ? `${window.location.origin}/book/` : "";
+
+  // Use configured base_url + booking_slug for QR, fallback to window.location
+  const bookUrl = typeof window !== "undefined"
+    ? (settings.base_url
+        ? `${settings.base_url.replace(/\/+$/, "")}/book/${settings.booking_slug}`
+        : `${window.location.origin}/book/`)
+    : "";
 
   useEffect(() => {
     if (bookUrl) {
@@ -39,7 +47,8 @@ export default function BookFlyerPage() {
           </div>
           <div className="flex-1">
             <h1 className="text-2xl font-extrabold tracking-tight">{businessName}</h1>
-            <p className="text-green-100 text-sm font-medium mt-0.5">Professional Lawn Care Services</p>
+            {serviceArea && <p className="text-green-100 text-sm font-medium mt-0.5">{serviceArea}</p>}
+            <p className="text-green-100 text-xs mt-0.5">Professional Lawn Care Services</p>
           </div>
         </div>
       </div>
@@ -49,6 +58,9 @@ export default function BookFlyerPage() {
         <div className="inline-block bg-white p-4 rounded-2xl shadow-md border-4 border-green-100 mb-6">
           {qrDataUrl && <img src={qrDataUrl} alt="Scan to book" className="w-56 h-56" />}
         </div>
+        {bookUrl && (
+          <p className="text-xs text-gray-400 font-mono break-all mb-6">{bookUrl}</p>
+        )}
 
         <h2 className="text-2xl font-extrabold text-gray-900 mb-2">
           📱 Scan to Book Your Service
@@ -104,6 +116,7 @@ export default function BookFlyerPage() {
         {/* Footer */}
         <div className="border-t border-gray-100 pt-4 flex items-center justify-between text-xs text-gray-400">
           {businessPhone && <span className="font-medium text-gray-600">📞 {businessPhone}</span>}
+          {serviceArea && <span className="text-gray-500">📍 {serviceArea}</span>}
           <span>Powered by Jade Rose Technology</span>
         </div>
       </div>

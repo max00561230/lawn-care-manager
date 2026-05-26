@@ -118,7 +118,7 @@ export default function SettingsPage() {
       {/* Email Settings */}
       <EmailSettingsSection />
 
-      {/* Working Hours */}
+      {/* Working Hours & Service Area */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
         <h2 className="font-semibold text-gray-900 mb-4">Working Hours</h2>
         <div className="grid grid-cols-2 gap-4">
@@ -133,12 +133,68 @@ export default function SettingsPage() {
         </div>
       </div>
 
+      {/* Booking & QR Settings */}
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+        <h2 className="font-semibold text-gray-900 mb-4">📲 Booking & QR Settings</h2>
+        <p className="text-xs text-gray-500 mb-4">Configure your public booking link and QR code. Customers can request appointments by scanning your QR code or visiting your booking page.</p>
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Booking Slug</label>
+            <input type="text" value={settings.booking_slug} onChange={(e) => updateSettings({ booking_slug: e.target.value.replace(/[^a-z0-9-]/g, "") })} className="input-field" placeholder="e.g. greenway-lawncare" />
+            <p className="text-xs text-gray-400 mt-1">Lowercase letters, numbers, and hyphens only. Used in your public booking URL.</p>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Base URL</label>
+            <input type="url" value={settings.base_url} onChange={(e) => updateSettings({ base_url: e.target.value })} className="input-field" placeholder="https://your-domain.com" />
+            <p className="text-xs text-gray-400 mt-1">Your deployed app URL. The booking page will be at {base_url}/book/{slug}</p>
+          </div>
+          <div className="bg-green-50 border border-green-200 rounded-xl p-4">
+            <p className="text-sm font-semibold text-green-800 mb-1">Your Public Booking Link</p>
+            <p className="text-sm text-green-700 font-mono break-all">
+              {settings.base_url ? `${settings.base_url.replace(/\/+$/, "")}/book/${settings.booking_slug}` : "Set your Base URL and Booking Slug above"}
+            </p>
+            {settings.base_url && (
+              <button
+                onClick={() => {
+                  const url = `${settings.base_url.replace(/\/+$/, "")}/book/${settings.booking_slug}`;
+                  navigator.clipboard?.writeText(url);
+                  alert("Booking link copied!");
+                }}
+                className="mt-2 bg-green-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-green-700 transition-colors"
+              >
+                📋 Copy Link
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+
       {/* Service Area */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
         <h2 className="font-semibold text-gray-900 mb-4">Default Service Area</h2>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Service Area Description</label>
           <input type="text" value={settings.service_area} onChange={(e) => updateSettings({ service_area: e.target.value })} className="input-field" />
+        </div>
+      </div>
+
+      {/* Payment & Policies */}
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+        <h2 className="font-semibold text-gray-900 mb-4">💳 Payment & Policies</h2>
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Payment Terms</label>
+            <textarea value={settings.payment_terms} onChange={(e) => updateSettings({ payment_terms: e.target.value })} className="input-field" rows={3} placeholder="Payment is due after service unless otherwise agreed." />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Cancellation Policy</label>
+            <textarea value={settings.cancellation_policy} onChange={(e) => updateSettings({ cancellation_policy: e.target.value })} className="input-field" rows={3} placeholder="Please request schedule changes at least 24 hours before service." />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Launch / Purchase Status</label>
+            <input type="text" value={settings.launch_status} onChange={(e) => updateSettings({ launch_status: e.target.value })} className="input-field" placeholder="e.g. Customized - Awaiting Purchase" />
+            <p className="text-xs text-gray-400 mt-1">Track whether this build is ready for vendor purchase.</p>
+          </div>
         </div>
       </div>
 
