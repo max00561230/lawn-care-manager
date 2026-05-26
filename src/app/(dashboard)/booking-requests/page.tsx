@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useBookingRequests, useCustomers, useAppointments, useServices } from "@/lib/storage";
+import { useBookingRequests, useCustomers, useAppointments } from "@/lib/storage";
 import { BookingRequest, BookingRequestStatus } from "@/types";
 import { Clock, CheckCircle, XCircle, MessageSquare, ArrowRight, Mail, UserPlus, CalendarPlus, Filter } from "lucide-react";
 
@@ -9,7 +9,6 @@ export default function BookingRequestsPage() {
   const { bookingRequests, updateBookingRequest, deleteBookingRequest } = useBookingRequests();
   const { addCustomer } = useCustomers();
   const { addAppointment, updateAppointment } = useAppointments();
-  const { services } = useServices();
 
   const [filter, setFilter] = useState<"all" | BookingRequestStatus>("all");
   const [expandedId, setExpandedId] = useState<string | null>(null);
