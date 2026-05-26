@@ -146,7 +146,7 @@ export default function SettingsPage() {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Base URL</label>
             <input type="url" value={settings.base_url} onChange={(e) => updateSettings({ base_url: e.target.value })} className="input-field" placeholder="https://your-domain.com" />
-            <p className="text-xs text-gray-400 mt-1">Your deployed app URL. The booking page will be at {base_url}/book/{slug}</p>
+            <p className="text-xs text-gray-400 mt-1">Your deployed app URL. The booking page will be at {'{'}base_url{'}'}/book/{'{'}slug{'}'}</p>
           </div>
           <div className="bg-green-50 border border-green-200 rounded-xl p-4">
             <p className="text-sm font-semibold text-green-800 mb-1">Your Public Booking Link</p>
